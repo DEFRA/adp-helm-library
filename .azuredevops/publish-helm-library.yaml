@@ -1,0 +1,44 @@
+name: $(BuildID)
+
+trigger:
+- main
+
+variables:
+  user.email: "ganesh.b.ghadge@capgemini.com"
+  user.name: "DevOps"
+
+pool:
+  vmImage: ubuntu-latest
+
+steps:
+  - checkout: self
+    persistCredentials: true
+
+  # - script: |
+  #     git config user.email ${{variables['user.email']}}
+  #     git config user.name ${{variables['user.name']}}
+  #   displayName: 'Configure git credentials'
+
+  - script: |
+      Write-Host 'Version Increment check'
+      Write-Host 'Pipeline.Workspace = ' $(Pipeline.Workspace)
+      Write-Host 'Agent.BuildDirectory = ' $(Agent.BuildDirectory)
+      Write-Host 'Build.SourcesDirectory = ' $(Build.SourcesDirectory)
+    displayName: 'Verify Library Chart version incremented'
+
+  - script: |
+      $lintPath = $(Build.SourcesDirectory)/adp-helm-library
+      Write-Host 'Helm lint: Path = $lintPath'
+      Helm lint $lintPath
+      Write-Host 'Helm lint: End'
+    displayName: 'Helm lint'    
+
+  # - task: PowerShell@2
+  #   displayName: 'Create git tag'
+  #   condition: eq(variables['Build.SourceBranch'], 'refs/heads/main')
+  #   inputs:
+  #     pwsh: true
+  #     azurePowerShellVersion: latestVersion
+  #     targetType: 'filePath'
+  #     filePath: $(Build.SourcesDirectory)/continuous-delivery/scripts/Set-GitReleaseTag.ps1
+  #     workingDirectory: $(Build.SourcesDirectory)  

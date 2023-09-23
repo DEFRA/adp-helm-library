@@ -28,8 +28,10 @@ steps:
 
   - powershell: |
       $lintPath = $(Build.SourcesDirectory)/adp-helm-library/adp-helm-library
+      Write-Host 'Printing helm version'
+      Helm version
       Write-Host 'Helm lint: Path = ' $lintPath
-      Helm lint $lintPath
+      Helm lint '$lintPath'
       Write-Host 'Helm lint: End'
     displayName: 'Helm lint'    
 

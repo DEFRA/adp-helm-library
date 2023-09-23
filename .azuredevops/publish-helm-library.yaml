@@ -8,7 +8,7 @@ variables:
   user.name: "DevOps"
 
 pool:
-  vmImage: ubuntu-latest
+  vmImage: windows-latest
 
 steps:
   - checkout: self
@@ -33,7 +33,7 @@ steps:
       Write-Host 'Helm lint: Path = ' $lintPath
       Helm lint $lintPath
       Write-Host 'Helm lint: End'
-    displayName: 'Helm lint'    
+    displayName: 'Helm lint'   
 
   # - task: PowerShell@2
   #   displayName: 'Create git tag'

@@ -11,22 +11,22 @@ pool:
   vmImage: ubuntu-latest
 
 steps:
-  - checkout: self
-    persistCredentials: true
+  # - checkout: self
+  #   persistCredentials: true
 
   # - script: |
   #     git config user.email ${{variables['user.email']}}
   #     git config user.name ${{variables['user.name']}}
   #   displayName: 'Configure git credentials'
 
-  - script: |
+  - powershell: |
       Write-Host 'Version Increment check'
       Write-Host 'Pipeline.Workspace = ' $(Pipeline.Workspace)
       Write-Host 'Agent.BuildDirectory = ' $(Agent.BuildDirectory)
       Write-Host 'Build.SourcesDirectory = ' $(Build.SourcesDirectory)
     displayName: 'Verify Library Chart version incremented'
 
-  - script: |
+  - powershell: |
       $lintPath = $(Build.SourcesDirectory)/adp-helm-library
       Write-Host 'Helm lint: Path = $lintPath'
       Helm lint $lintPath

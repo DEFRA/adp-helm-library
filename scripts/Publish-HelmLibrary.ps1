@@ -26,20 +26,23 @@ Write-Debug "${functionName}:HelmLibraryPath=$HelmLibraryPath"
 
 try {
 
-    Write-Host "List all files Get-ChildItem"
-    Get-ChildItem
-
-    Write-Host "List all files Get-ChildItem .."
-    Get-ChildItem ..
-    
     Write-Host "PWD is ="
     Get-Location
 
-    Write-Host "Set-Location is ="
-    Set-Location ../ADPHelmRepository
+    # Write-Host "Set-Location is ="
+    # Set-Location ../ADPHelmRepository
 
-    Write-Host "Get-ChildItem is"
-    Get-ChildItem
+    
+    # Write-Host "List all files Get-ChildItem"
+    # Get-ChildItem
+
+    # Write-Host "List all files Get-ChildItem .."
+    # Get-ChildItem ..
+    
+    
+
+    # Write-Host "Get-ChildItem is"
+    # Get-ChildItem
 
     # helm package $repoName    
 

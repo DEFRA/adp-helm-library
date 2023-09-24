@@ -43,15 +43,28 @@ try {
     Write-Host "List all files Get-ChildItem in ADPHelmRepository and confirm .tgz file"
     Get-ChildItem 
 
+    Write-Host "git config list"
+    git config --list
+
     git config user.email "ganesh.b.ghadge@capgemini.com"
     git config user.name "Devops"
+
+    Write-Host "show git remote origin"
+    git remote show origin    
+
+    $aa = "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"
 
     # git checkout -b main
     git add $packageNameWithVersion
     git commit -am "Add new version $currentVersion" --author="ADO Devops <ado@noemail.com>"
     # git push --set-upstream origin main 
-    $aa = 'pattoken'
-    git push "https://$aa@github.com/defra-adp-sandpit/adp-helm-repository.git" Head:main
+    # $aa = 'pattoken'
+    # git push "https://$aa@github.com/defra-adp-sandpit/adp-helm-repository.git" Head:main
+
+    Write-Host "git push using token"
+    git remote remove origin
+    git remote add origin "https://$aa@github.com/defra-adp-sandpit/adp-helm-repository.git"
+    git push
 
     $exitCode = 0
 }

@@ -48,9 +48,10 @@ try {
 
     git checkout -b main
     git add $packageNameWithVersion
-    git commit -am \"Add new version $currentVersion\" --author=\"ADO Devops <ado@noemail.com>\"
-    git push --set-upstream origin main 
-    # git push https://github.com/defra-adp-sandpit/adp-helm-repository.git
+    git commit -am "Add new version $currentVersion" --author="ADO Devops <ado@noemail.com>"
+    # git push --set-upstream origin main 
+    $aa = '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'
+    git push "https://$aa@github.com/defra-adp-sandpit/adp-helm-repository.git"
 
     $exitCode = 0
 }

@@ -46,7 +46,7 @@ try {
     git config user.email "ganesh.b.ghadge@capgemini.com"
     git config user.name "Devops"
 
-    git checkout -b main
+    # git checkout -b main
     git add $packageNameWithVersion
     git commit -am "Add new version $currentVersion" --author="ADO Devops <ado@noemail.com>"
     # git push --set-upstream origin main 

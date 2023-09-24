@@ -26,40 +26,29 @@ Write-Debug "${functionName}:HelmLibraryPath=$HelmLibraryPath"
 
 try {
 
-    Write-Host "PWD is ="
-    Get-Location #D:\a\1\s 
-
-    Write-Host "Set-Location to ADPHelmLibrary"
-    Set-Location ../ADPHelmLibrary #D:\a\1\ADPHelmLibrary
-
+    Write-Host "PWD is = " (Get-Location).Path #D:\a\1\s 
+     
     Write-Host "Package Helm library chart"
     helm package $HelmLibraryPath 
 
-    Write-Host "Check .tgz package is created"
-    Get-ChildItem
+    $currentVersion = "4.0.1"
+    $packageName = Split-Path $HelmLibraryPath -Leaf
+    $packageNameWithVersion = "$packageName-$currentVersion.tgz"
+
+    Move-Item -Path $packageNameWithVersion -Destination ../ADPHelmRepository
 
     Write-Host "Set-Location to ADPHelmRepository"
     Set-Location ../ADPHelmRepository
 
-    Write-Host "List all files Get-ChildItem in ADPHelmRepository"
-    Get-ChildItem
+    Write-Host "List all files Get-ChildItem in ADPHelmRepository and confirm .tgz file"
+    Get-ChildItem 
 
-    # Write-Host "List all files Get-ChildItem .."
-    # Get-ChildItem ..
-    
-    
+    git add $packageNameWithVersion
+    git commit -am \"Add new version $currentVersion\" --author=\"ADO Devops <ado@noemail.com>\"
+    # git push --set-upstream origin main 
+    git push  https://github.com/defra-adp-sandpit/adp-helm-repository.git
 
-    # Write-Host "Get-ChildItem is"
-    # Get-ChildItem
-
-    # helm package $repoName    
-
-    # git checkout  -b master
-    # echo 'This is a test' > data.txt
-    # git add -A
-    # git commit -m "deployment $(Build.BuildNumber)"
-    # git push --set-upstream origin master 
-
+    $exitCode = 0
 }
 catch {
     $exitCode = -2

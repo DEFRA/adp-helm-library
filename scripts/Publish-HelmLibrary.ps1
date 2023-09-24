@@ -62,9 +62,10 @@ try {
     # git push "https://$aa@github.com/defra-adp-sandpit/adp-helm-repository.git" Head:main
 
     Write-Host "git push using token"
+    git checkout -b main
     git remote remove origin
     git remote add origin "https://$aa@github.com/defra-adp-sandpit/adp-helm-repository.git"
-    git push origin main
+    git push --set-upstream origin main
 
     $exitCode = 0
 }

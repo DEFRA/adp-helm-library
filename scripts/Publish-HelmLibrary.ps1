@@ -64,7 +64,7 @@ try {
     Write-Host "git push using token"
     git remote remove origin
     git remote add origin "https://$aa@github.com/defra-adp-sandpit/adp-helm-repository.git"
-    git push
+    git push origin main
 
     $exitCode = 0
 }

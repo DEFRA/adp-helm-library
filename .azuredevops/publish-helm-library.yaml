@@ -10,14 +10,27 @@ variables:
 pool:
   vmImage: windows-latest
 
+resources:
+  repositories:
+    - repository: ADPHelmRepository
+      name: defra-adp-sandpit/adp-helm-repository
+      endpoint: defra-adp-sandpit
+      type: github
+      ref: main  
+
 steps:
   - checkout: self
     persistCredentials: true
+    path: ADPHelmLibrary
 
-  # - script: |
-  #     git config user.email ${{variables['user.email']}}
-  #     git config user.name ${{variables['user.name']}}
-  #   displayName: 'Configure git credentials'
+  - checkout: ADPHelmRepository
+    persistCredentials: true
+    path: ADPHelmRepository  
+
+  - script: |
+      git config user.email ${{variables['user.email']}}
+      git config user.name ${{variables['user.name']}}
+    displayName: 'Configure git credentials'
 
   - powershell: |
       Write-Host 'Version Increment check'
@@ -27,7 +40,7 @@ steps:
     displayName: 'Verify Library Chart version incremented'
 
   - powershell: |
-      $lintPath = "$(Build.SourcesDirectory)/adp-helm-library"
+      $lintPath = "$(Build.SourcesDirectory)/ADPHelmLibrary/adp-helm-library"
       Write-Host 'Printing helm version'
       Helm version
       Get-ChildItem
@@ -36,12 +49,14 @@ steps:
       Write-Host 'Helm lint: End'
     displayName: 'Helm lint'   
 
-  # - task: PowerShell@2
-  #   displayName: 'Create git tag'
-  #   condition: eq(variables['Build.SourceBranch'], 'refs/heads/main')
-  #   inputs:
-  #     pwsh: true
-  #     azurePowerShellVersion: latestVersion
-  #     targetType: 'filePath'
-  #     filePath: $(Build.SourcesDirectory)/continuous-delivery/scripts/Set-GitReleaseTag.ps1
-  #     workingDirectory: $(Build.SourcesDirectory)  
+  - task: PowerShell@2
+    displayName: 'Publish Helm Chart'
+    # condition: eq(variables['Build.SourceBranch'], 'refs/heads/main')
+    inputs:
+      pwsh: true
+      azurePowerShellVersion: latestVersion
+      targetType: 'filePath'
+      filePath: $(Build.SourcesDirectory)/ADPHelmLibrary/scripts/Publish-HelmLibrary.ps1
+      arguments: >
+        -HelmLibraryPath "$(Build.SourcesDirectory)/ADPHelmLibrary/adp-helm-library"
+      workingDirectory: $(Build.SourcesDirectory)  

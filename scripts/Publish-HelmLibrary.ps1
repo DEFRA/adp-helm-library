@@ -50,7 +50,7 @@ try {
     git add $packageNameWithVersion
     git commit -am "Add new version $currentVersion" --author="ADO Devops <ado@noemail.com>"
     # git push --set-upstream origin main 
-    $aa = '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'
+    $aa = 'pattoken'
     git push "https://$aa@github.com/defra-adp-sandpit/adp-helm-repository.git" Head:main
 
     $exitCode = 0

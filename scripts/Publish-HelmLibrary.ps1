@@ -52,7 +52,7 @@ try {
     Write-Host "show git remote origin"
     git remote show origin    
 
-    $aa = "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"
+    $aa = "token"
 
     # git checkout -b main
     git add $packageNameWithVersion

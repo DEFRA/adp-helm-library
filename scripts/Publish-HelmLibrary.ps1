@@ -27,14 +27,22 @@ Write-Debug "${functionName}:HelmLibraryPath=$HelmLibraryPath"
 try {
 
     Write-Host "PWD is ="
-    Get-Location
+    Get-Location #D:\a\1\s 
 
-    # Write-Host "Set-Location is ="
-    # Set-Location ../ADPHelmRepository
+    Write-Host "Set-Location to ADPHelmLibrary"
+    Set-Location ../ADPHelmLibrary #D:\a\1\ADPHelmLibrary
 
-    
-    # Write-Host "List all files Get-ChildItem"
-    # Get-ChildItem
+    Write-Host "Package Helm library chart"
+    helm package $HelmLibraryPath 
+
+    Write-Host "Check .tgz package is created"
+    Get-ChildItem
+
+    Write-Host "Set-Location to ADPHelmRepository"
+    Set-Location ../ADPHelmRepository
+
+    Write-Host "List all files Get-ChildItem in ADPHelmRepository"
+    Get-ChildItem
 
     # Write-Host "List all files Get-ChildItem .."
     # Get-ChildItem ..

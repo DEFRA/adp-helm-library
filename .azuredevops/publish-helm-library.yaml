@@ -27,20 +27,21 @@ steps:
     persistCredentials: true
     path: ADPHelmRepository  
 
-  - script: |
-      git config user.email ${{variables['user.email']}}
-      git config user.name ${{variables['user.name']}}
-    displayName: 'Configure git credentials'
+  # - script: |
+  #     git config user.email ${{variables['user.email']}}
+  #     git config user.name ${{variables['user.name']}}
+  #   displayName: 'Configure git credentials'
 
   - powershell: |
       Write-Host 'Version Increment check'
       Write-Host 'Pipeline.Workspace = ' $(Pipeline.Workspace)
       Write-Host 'Agent.BuildDirectory = ' $(Agent.BuildDirectory)
       Write-Host 'Build.SourcesDirectory = ' $(Build.SourcesDirectory)
+      Write-Host 'System.DefaultWorkingDirectory = ' $(System.DefaultWorkingDirectory)
     displayName: 'Verify Library Chart version incremented'
 
   - powershell: |
-      $lintPath = "$(Build.SourcesDirectory)/ADPHelmLibrary/adp-helm-library"
+      $lintPath = "$(Agent.BuildDirectory)/ADPHelmLibrary/adp-helm-library"
       Write-Host 'Printing helm version'
       Helm version
       Get-ChildItem
@@ -56,7 +57,7 @@ steps:
       pwsh: true
       azurePowerShellVersion: latestVersion
       targetType: 'filePath'
-      filePath: $(Build.SourcesDirectory)/ADPHelmLibrary/scripts/Publish-HelmLibrary.ps1
+      filePath: $(Agent.BuildDirectory)/ADPHelmLibrary/scripts/Publish-HelmLibrary.ps1
       arguments: >
-        -HelmLibraryPath "$(Build.SourcesDirectory)/ADPHelmLibrary/adp-helm-library"
-      workingDirectory: $(Build.SourcesDirectory)  
+        -HelmLibraryPath "$(Agent.BuildDirectory)/ADPHelmLibrary/adp-helm-library"
+      workingDirectory: $(System.DefaultWorkingDirectory) 

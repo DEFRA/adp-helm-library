@@ -64,7 +64,11 @@ try {
     Set-Location ../ADPHelmRepository
 
     helm repo index . --url $HelmChartRepoPublic
-
+    $exitCode = $LASTEXITCODE
+    if ($exitCode -ne 0) {
+      throw "Non zero exit code: $exitCode"
+    }
+    
     Write-Host "Configure git credentials"
     git config user.email "ado@noemail.com"
     git config user.name "Devops"

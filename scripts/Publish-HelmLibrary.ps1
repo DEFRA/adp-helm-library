@@ -33,7 +33,7 @@ try {
     Write-Host "Package Helm library chart"
     helm package $HelmLibraryPath 
 
-    $currentVersion = "4.0.1"
+    $currentVersion = "4.0.2"
     $packageName = Split-Path $HelmLibraryPath -Leaf
     $packageNameWithVersion = "$packageName-$currentVersion.tgz"
 
@@ -57,7 +57,7 @@ try {
     # $aa = "token"
 
     Write-Host "git push using token"
-    git checkout -b main
+    # git checkout -b main
     git add $packageNameWithVersion
     git commit -am "Add new version $currentVersion" --author="ADO Devops <ado@noemail.com>"
     # git push --set-upstream origin main 

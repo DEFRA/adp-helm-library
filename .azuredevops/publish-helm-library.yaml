@@ -50,7 +50,7 @@ steps:
   - task: PowerShell@2
     displayName: 'Publish Helm Chart to Helm Repositiry(Github)'
     # condition: and(succeeded(), eq(variables['Build.SourceBranch'], 'refs/heads/main'))
-    condition: and(succeeded(), eq(variables['Build.SourceBranch'], 'gg/232259-ado-pipeline-helm'))
+    condition: and(succeeded(), eq(variables['Build.SourceBranch'], 'refs/heads/gg/232259-ado-pipeline-helm'))
     inputs:
       pwsh: true
       azurePowerShellVersion: latestVersion

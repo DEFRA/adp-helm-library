@@ -1,7 +1,9 @@
 [CmdletBinding()]
 param(
     [Parameter(Mandatory)] 
-    [string]$HelmLibraryPath
+    [string]$HelmLibraryPath,
+    [Parameter(Mandatory)] 
+    [string]$ChartVersion
 )
 
 Set-StrictMode -Version 3.0
@@ -23,14 +25,14 @@ if ($enableDebug) {
 
 Write-Host "${functionName} started at $($startTime.ToString('u'))"
 Write-Debug "${functionName}:HelmLibraryPath=$HelmLibraryPath"
+Write-Debug "${functionName}:ChartVersion=$ChartVersion"
 
 try {
     Write-Host "Package Helm library chart"
     helm package $HelmLibraryPath 
 
-    $currentVersion = "4.0.3"
     $packageName = Split-Path $HelmLibraryPath -Leaf
-    $packageNameWithVersion = "$packageName-$currentVersion.tgz"
+    $packageNameWithVersion = "$packageName-$ChartVersion.tgz"
 
     Move-Item -Path $packageNameWithVersion -Destination ../ADPHelmRepository
 
@@ -43,7 +45,7 @@ try {
     Write-Host "git push package to adp-helm-repository"
     git checkout -b main
     git add $packageNameWithVersion
-    git commit -am "Add new version $currentVersion" --author="ADO Devops <ado@noemail.com>"
+    git commit -am "Add new version $ChartVersion" --author="ADO Devops <ado@noemail.com>"
     git push --set-upstream origin main
 
     $exitCode = 0

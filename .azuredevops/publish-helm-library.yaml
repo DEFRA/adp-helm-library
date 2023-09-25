@@ -76,4 +76,5 @@ steps:
       filePath: $(Agent.BuildDirectory)/ADPHelmLibrary/scripts/Publish-HelmLibrary.ps1
       arguments: >
         -HelmLibraryPath "$(Agent.BuildDirectory)\ADPHelmLibrary\adp-helm-library"
+        -ChartVersion $(ChartCurrentVersion)
       workingDirectory: $(System.DefaultWorkingDirectory) 

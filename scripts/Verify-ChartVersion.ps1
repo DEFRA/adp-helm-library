@@ -37,23 +37,20 @@ try {
 
     Write-Host "PWD is = " (Get-Location).Path
 
-    [version]$currentVersion = (Get-Content $HelmLibraryPath/Chart.yaml |  ConvertFrom-Yaml).version
+    [version]$currentVersion = (Get-Content $HelmLibraryPath/Chart.yaml | ConvertFrom-Yaml).version
     Write-Debug "currentVersion: $currentVersion"
 
-    Write-Host "git branch before"
-    git branch -r
-
-    Write-Host "git fetch"
+    # Fetch origin
     git fetch origin
 
-    Write-Host "git branch after"
-    git branch -r
-
-    [version]$previousVersion = (git show origin/main:adp-helm-library/Chart.yaml).version
+    [version]$previousVersion = (git show origin/main:adp-helm-library/Chart.yaml | ConvertFrom-Yaml).version
     Write-Debug "previousVersion: $previousVersion"
 
     if($currentVersion -gt $previousVersion){
         Write-Host "Version increment valid '$previousVersion' -> '$currentVersion'."
+
+        Write-Host "##vso[task.setvariable variable=$ChartCurrentVersion]$currentVersion" 
+
         $exitCode = 0
     }
     else{

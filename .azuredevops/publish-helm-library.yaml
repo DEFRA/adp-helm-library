@@ -35,13 +35,13 @@ steps:
   #     git config user.name ${{variables['user.name']}}
   #   displayName: 'Configure git credentials'
 
-  - powershell: |
-      Write-Host 'Version Increment check'
-      Write-Host 'Pipeline.Workspace = ' $(Pipeline.Workspace)
-      Write-Host 'Agent.BuildDirectory = ' $(Agent.BuildDirectory)
-      Write-Host 'Build.SourcesDirectory = ' $(Build.SourcesDirectory)
-      Write-Host 'System.DefaultWorkingDirectory = ' $(System.DefaultWorkingDirectory)
-    displayName: 'Verify Library Chart version incremented'
+  # - powershell: |
+  #     Write-Host 'Version Increment check'
+  #     Write-Host 'Pipeline.Workspace = ' $(Pipeline.Workspace)
+  #     Write-Host 'Agent.BuildDirectory = ' $(Agent.BuildDirectory)
+  #     Write-Host 'Build.SourcesDirectory = ' $(Build.SourcesDirectory)
+  #     Write-Host 'System.DefaultWorkingDirectory = ' $(System.DefaultWorkingDirectory)
+  #   displayName: 'Verify Library Chart version incremented'
 
   # - powershell: |
   #     $lintPath = "$(Agent.BuildDirectory)/ADPHelmLibrary/adp-helm-library"

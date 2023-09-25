@@ -3,7 +3,7 @@ param(
     [Parameter(Mandatory)] 
     [string]$HelmLibraryPath,
     [Parameter(Mandatory)] 
-    [securestring]$Token
+    [string]$Token
 )
 
 Set-StrictMode -Version 3.0

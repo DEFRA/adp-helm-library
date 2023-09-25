@@ -24,7 +24,7 @@ spec:
         {{- include "adp-helm-library.labels" . | nindent 8 }}
       annotations:
         {{- if .Values.deployment.useLinkerd }}
-        linkerd.io/inject: enabled 
+        linkerd.io/inject: enabled
         config.linkerd.io/proxy-cpu-limit: 20m
         config.linkerd.io/proxy-cpu-request: 1m
         config.linkerd.io/proxy-memory-limit: 80Mi

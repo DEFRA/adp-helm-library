@@ -48,7 +48,7 @@ try {
     Write-Host "git config list"
     git config --list
 
-    git config user.email "ganesh.b.ghadge@capgemini.com"
+    git config user.email "ado@noemail.com"
     git config user.name "Devops"
 
     Write-Host "show git remote origin"

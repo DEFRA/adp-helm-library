@@ -40,6 +40,15 @@ try {
     [version]$currentVersion = (Get-Content $HelmLibraryPath/Chart.yaml |  ConvertFrom-Yaml).version
     Write-Debug "currentVersion: $currentVersion"
 
+    Write-Host "git branch before"
+    git branch -r
+
+    Write-Host "git fetch"
+    git fetch origin
+
+    Write-Host "git branch after"
+    git branch -r
+
     [version]$previousVersion = (git show origin/main:adp-helm-library/Chart.yaml).version
     Write-Debug "previousVersion: $previousVersion"
 

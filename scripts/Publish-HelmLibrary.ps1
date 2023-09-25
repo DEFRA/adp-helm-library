@@ -39,6 +39,7 @@ try {
     Write-Host "Set-Location to ADPHelmRepository"
     Set-Location ../ADPHelmRepository
 
+    Write-Host "Configure git credentials"
     git config user.email "ado@noemail.com"
     git config user.name "Devops"
 

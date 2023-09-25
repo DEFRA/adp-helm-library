@@ -50,9 +50,13 @@ Write-Debug "${functionName}:HelmChartRepoPublic=$HelmChartRepoPublic"
 try {
     Write-Host "Package Helm library chart"
     helm package $HelmLibraryPath 
+    $exitCode = $LASTEXITCODE
+    if ($exitCode -ne 0) {
+      throw "Non zero exit code: $exitCode"
+    }
 
-    $packageName = Split-Path $HelmLibraryPath -Leaf
-    $packageNameWithVersion = "$packageName-$ChartVersion.tgz"
+    [string]$packageName = Split-Path $HelmLibraryPath -Leaf
+    [string]$packageNameWithVersion = "$packageName-$ChartVersion.tgz"
 
     Move-Item -Path $packageNameWithVersion -Destination ../ADPHelmRepository
 
@@ -70,7 +74,6 @@ try {
     git add $packageNameWithVersion
     git commit -am "Add new version $ChartVersion" --author="ADO Devops <ado@noemail.com>"
     git push --set-upstream origin main
-
     $exitCode = 0
 }
 catch {

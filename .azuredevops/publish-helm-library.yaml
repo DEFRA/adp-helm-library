@@ -49,6 +49,9 @@ steps:
       $lintPath = "$(Agent.BuildDirectory)\ADPHelmLibrary\adp-helm-library"
       Write-Host 'Helm lint: Path = ' $lintPath
       Helm lint $lintPath
+      if ($LASTEXITCODE -ne 0) {
+        throw "Non zero exit code: $LASTEXITCODE"
+      }
       Write-Host 'Helm lint: End'
     displayName: 'Helm lint'   
 

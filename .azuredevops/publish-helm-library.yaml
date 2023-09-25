@@ -1,7 +1,15 @@
 name: $(BuildID)
 
 trigger:
-- main
+  batch: true
+  branches:
+    include:
+      - 'main'
+  paths:
+    include:
+      - .azuredevops/*
+      - adp-helm-library/*
+      - scripts/*
 
 pr:
   branches:
@@ -9,7 +17,9 @@ pr:
       - main
   paths:
     include:
+      - .azuredevops/*
       - adp-helm-library/*
+      - scripts/*
 
 pool:
   vmImage: windows-latest

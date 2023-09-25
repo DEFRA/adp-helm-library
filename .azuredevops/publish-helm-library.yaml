@@ -3,6 +3,14 @@ name: $(BuildID)
 trigger:
 - main
 
+pr:
+  branches:
+    include:
+      - main
+  paths:
+    include:
+      - adp-helm-library/*
+
 pool:
   vmImage: windows-latest
 

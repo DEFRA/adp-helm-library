@@ -1,3 +1,20 @@
+<#
+.SYNOPSIS
+Publish Helm library chart to github repo 'Defra/adp-helm-repository'.
+
+.DESCRIPTION
+Package Helm library chart.
+Publish Helm library chart to github repo 'Defra/adp-helm-repository' and updates index.yaml file in that repo.
+
+.PARAMETER HelmLibraryPath
+Helm library folder root path. requires to package helm library into .tgz package.
+
+.PARAMETER ChartVersion
+Current Helm library ChartVersion.
+
+.PARAMETER HelmChartRepoPublic
+Helm chart publich url. Requires to index.yaml file.
+#>
 [CmdletBinding()]
 param(
     [Parameter(Mandatory)] 

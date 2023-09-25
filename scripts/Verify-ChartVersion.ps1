@@ -1,3 +1,15 @@
+<#
+.SYNOPSIS
+Verify version in chart.yaml is changed and incremented.
+
+.DESCRIPTION
+Compares version in chart.yaml file with the main version and working branch version.
+The script will throw an error if the version has not been incremented in working branch
+otherwise it will print a message stating the version increment and stores in variable 'ChartCurrentVersion'.
+
+.PARAMETER HelmLibraryPath
+Helm library folder root path.
+#>
 [CmdletBinding()]
 param(
     [Parameter(Mandatory)] 

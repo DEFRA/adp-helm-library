@@ -2,22 +2,21 @@ name: $(BuildID)
 
 trigger:
 - main
-- gg/232259-ado-pipeline-helm
 
 pool:
   vmImage: windows-latest
 
 variables:
   - name: HelmChartRepoPublic
-    value: "https://raw.githubusercontent.com/defra-adp-sandpit/adp-helm-repository-fork/main/"
+    value: "https://raw.githubusercontent.com/defra/adp-helm-repository/main/"
 
 resources:
   repositories:
     - repository: ADPHelmRepository
-      name: defra-adp-sandpit/adp-helm-repository-fork
-      endpoint: defra-adp-sandpit
+      name: defra/adp-helm-repository
+      endpoint: DEFRA
       type: github
-      ref: main  
+      ref: main
 
 steps:
   - checkout: self
@@ -49,8 +48,7 @@ steps:
 
   - task: PowerShell@2
     displayName: 'Publish Helm Chart to Helm Repositiry(Github)'
-    # condition: and(succeeded(), eq(variables['Build.SourceBranch'], 'refs/heads/main'))
-    condition: and(succeeded(), eq(variables['Build.SourceBranch'], 'refs/heads/gg/232259-ado-pipeline-helm'))
+    condition: and(succeeded(), eq(variables['Build.SourceBranch'], 'refs/heads/main'))
     inputs:
       pwsh: true
       azurePowerShellVersion: latestVersion

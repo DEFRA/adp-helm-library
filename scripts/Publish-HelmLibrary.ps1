@@ -56,13 +56,22 @@ try {
 
     # $aa = "token"
 
-    Write-Host "git push using token"
+    #-----------Wroked-------------------------#
+    # Write-Host "git push using token"
     # git checkout -b main
+    # git add $packageNameWithVersion
+    # git commit -am "Add new version $currentVersion" --author="ADO Devops <ado@noemail.com>"
+    # # git push --set-upstream origin main 
+    # # $aa = 'pattoken'
+    # git push "https://$Token@github.com/defra-adp-sandpit/adp-helm-repository.git"
+
+    #-----------test2-------------------------#
+    Write-Host "git push using without token"
+    git checkout -b main
     git add $packageNameWithVersion
-    git commit -am "Add new version $currentVersion" --author="ADO Devops <ado@noemail.com>"
-    # git push --set-upstream origin main 
-    # $aa = 'pattoken'
-    git push "https://$Token@github.com/defra-adp-sandpit/adp-helm-repository.git"
+    git commit -am "Addd new version $currentVersion" --author="ADO Devops <ado@noemail.com>"
+    git push "https://github.com/defra-adp-sandpit/adp-helm-repository.git"
+
 
     # Write-Host "git push using token"
     # git checkout -b main

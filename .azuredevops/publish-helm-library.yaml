@@ -54,8 +54,21 @@ steps:
   #   displayName: 'Helm lint'   
 
   - task: PowerShell@2
-    displayName: 'Publish Helm Chart'
+    displayName: 'Version Chart version Incremented'
     # condition: eq(variables['Build.SourceBranch'], 'refs/heads/main')
+    inputs:
+      pwsh: true
+      azurePowerShellVersion: latestVersion
+      targetType: 'filePath'
+      filePath: $(Agent.BuildDirectory)/ADPHelmLibrary/scripts/Verify-ChartVersion.ps1
+      arguments: >
+        -HelmLibraryPath "$(Agent.BuildDirectory)\ADPHelmLibrary\adp-helm-library"
+      workingDirectory: $(Agent.BuildDirectory)\ADPHelmLibrary  
+
+  - task: PowerShell@2
+    displayName: 'Publish Helm Chart to Helm Repositiry(Github)'
+    # condition: and(succeeded(), eq(variables['Build.SourceBranch'], 'refs/heads/main'))
+    condition: and(succeeded(), eq(variables['Build.SourceBranch'], 'gg/232259-ado-pipeline-helm'))
     inputs:
       pwsh: true
       azurePowerShellVersion: latestVersion
@@ -63,5 +76,4 @@ steps:
       filePath: $(Agent.BuildDirectory)/ADPHelmLibrary/scripts/Publish-HelmLibrary.ps1
       arguments: >
         -HelmLibraryPath "$(Agent.BuildDirectory)\ADPHelmLibrary\adp-helm-library"
-        -Token $(github-adpplatform-access-token)
       workingDirectory: $(System.DefaultWorkingDirectory) 

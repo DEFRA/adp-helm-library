@@ -25,28 +25,31 @@ Write-Host "${functionName} started at $($startTime.ToString('u'))"
 Write-Debug "${functionName}:HelmLibraryPath=$HelmLibraryPath"
 
 try {
-    Write-Host "Package Helm library chart"
-    helm package $HelmLibraryPath 
+    
+    if (-not (Get-Module -ListAvailable -Name 'powershell-yaml')) {
+        Write-Host "powershell-yaml Module does not exists. Installing now.."
+        Install-Module powershell-yaml -Force -Scope CurrentUser
+        Write-Host "powershell-yaml Installed Successfully."
+    } 
+    else {
+        Write-Host "powershell-yaml Module exist"
+    }
 
-    $currentVersion = "4.0.3"
-    $packageName = Split-Path $HelmLibraryPath -Leaf
-    $packageNameWithVersion = "$packageName-$currentVersion.tgz"
+    Write-Host "PWD is = " (Get-Location).Path
 
-    Move-Item -Path $packageNameWithVersion -Destination ../ADPHelmRepository
+    [version]$currentVersion = (Get-Content $HelmLibraryPath/Chart.yaml |  ConvertFrom-Yaml).version
+    Write-Debug "currentVersion: $currentVersion"
 
-    Write-Host "Set-Location to ADPHelmRepository"
-    Set-Location ../ADPHelmRepository
+    [version]$previousVersion = (git show origin/main:adp-helm-library/Chart.yaml).version
+    Write-Debug "previousVersion: $previousVersion"
 
-    git config user.email "ado@noemail.com"
-    git config user.name "Devops"
-
-    Write-Host "git push package to adp-helm-repository"
-    git checkout -b main
-    git add $packageNameWithVersion
-    git commit -am "Add new version $currentVersion" --author="ADO Devops <ado@noemail.com>"
-    git push --set-upstream origin main
-
-    $exitCode = 0
+    if($currentVersion -gt $previousVersion){
+        Write-Host "Version increment valid '$previousVersion' -> '$currentVersion'."
+        $exitCode = 0
+    }
+    else{
+        Write-Error "Version increment invalid '$previousVersion' -> '$currentVersion'."
+    }
 }
 catch {
     $exitCode = -2

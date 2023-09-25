@@ -49,7 +49,7 @@ try {
     if($currentVersion -gt $previousVersion){
         Write-Host "Version increment valid '$previousVersion' -> '$currentVersion'."
 
-        Write-Host "##vso[task.setvariable variable=$ChartCurrentVersion]$currentVersion" 
+        Write-Host "##vso[task.setvariable variable=ChartCurrentVersion]$currentVersion" 
 
         $exitCode = 0
     }

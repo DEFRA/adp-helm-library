@@ -3,7 +3,9 @@ param(
     [Parameter(Mandatory)] 
     [string]$HelmLibraryPath,
     [Parameter(Mandatory)] 
-    [string]$ChartVersion
+    [string]$ChartVersion,
+    [Parameter(Mandatory)] 
+    [string]$HelmChartRepoPublic
 )
 
 Set-StrictMode -Version 3.0
@@ -26,6 +28,7 @@ if ($enableDebug) {
 Write-Host "${functionName} started at $($startTime.ToString('u'))"
 Write-Debug "${functionName}:HelmLibraryPath=$HelmLibraryPath"
 Write-Debug "${functionName}:ChartVersion=$ChartVersion"
+Write-Debug "${functionName}:HelmChartRepoPublic=$HelmChartRepoPublic"
 
 try {
     Write-Host "Package Helm library chart"
@@ -38,6 +41,8 @@ try {
 
     Write-Host "Set-Location to ADPHelmRepository"
     Set-Location ../ADPHelmRepository
+
+    helm repo index . --url $HelmChartRepoPublic
 
     Write-Host "Configure git credentials"
     git config user.email "ado@noemail.com"

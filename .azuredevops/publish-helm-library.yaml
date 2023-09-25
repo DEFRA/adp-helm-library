@@ -8,7 +8,7 @@ trigger:
 #   user.name: "DevOps"
 
 variables:
-- group: github-adpplatform-access-token  
+- group: HelmPOC 
 
 pool:
   vmImage: windows-latest
@@ -63,5 +63,5 @@ steps:
       filePath: $(Agent.BuildDirectory)/ADPHelmLibrary/scripts/Publish-HelmLibrary.ps1
       arguments: >
         -HelmLibraryPath "$(Agent.BuildDirectory)\ADPHelmLibrary\adp-helm-library"
-        -Token $(github-adpplatform-access-token1)
+        -Token $(github-adpplatform-access-token)
       workingDirectory: $(System.DefaultWorkingDirectory) 

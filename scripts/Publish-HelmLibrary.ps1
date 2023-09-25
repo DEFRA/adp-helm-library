@@ -33,7 +33,7 @@ try {
     Write-Host "Package Helm library chart"
     helm package $HelmLibraryPath 
 
-    $currentVersion = "4.0.2"
+    $currentVersion = "4.0.3"
     $packageName = Split-Path $HelmLibraryPath -Leaf
     $packageNameWithVersion = "$packageName-$currentVersion.tgz"
 
@@ -56,21 +56,21 @@ try {
 
     # $aa = "token"
 
-    #-----------Wroked-------------------------#
-    # Write-Host "git push using token"
-    # git checkout -b main
-    # git add $packageNameWithVersion
-    # git commit -am "Add new version $currentVersion" --author="ADO Devops <ado@noemail.com>"
-    # # git push --set-upstream origin main 
-    # # $aa = 'pattoken'
-    # git push "https://$Token@github.com/defra-adp-sandpit/adp-helm-repository.git"
-
-    #-----------test2-------------------------#
-    Write-Host "git push using without token"
+    # -----------Wroked-------------------------#
+    Write-Host "git push using token"
     git checkout -b main
     git add $packageNameWithVersion
-    git commit -am "Addd new version $currentVersion" --author="ADO Devops <ado@noemail.com>"
-    git push "https://github.com/defra-adp-sandpit/adp-helm-repository.git"
+    git commit -am "Add new version test $currentVersion" --author="ADO Devops <ado@noemail.com>"
+    git push --set-upstream origin main 
+    # $aa = 'pattoken'
+    # git push "https://$Token@github.com/defra-adp-sandpit/adp-helm-repository.git"
+
+    # #-----------test2-------------------------#
+    # Write-Host "git push using without token"
+    # git checkout -b main
+    # git add $packageNameWithVersion
+    # git commit -am "Addd new version $currentVersion" --author="ADO Devops <ado@noemail.com>"
+    # git push "https://github.com/defra-adp-sandpit/adp-helm-repository.git"
 
 
     # Write-Host "git push using token"

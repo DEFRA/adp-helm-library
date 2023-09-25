@@ -1,7 +1,9 @@
 [CmdletBinding()]
 param(
     [Parameter(Mandatory)] 
-    [string]$HelmLibraryPath
+    [string]$HelmLibraryPath,
+    [Parameter(Mandatory)] 
+    [securestring]$Token
 )
 
 Set-StrictMode -Version 3.0
@@ -52,20 +54,21 @@ try {
     Write-Host "show git remote origin"
     git remote show origin    
 
-    $aa = "token"
+    # $aa = "token"
 
-    # git checkout -b main
+    Write-Host "git push using token"
+    git checkout -b main
     git add $packageNameWithVersion
     git commit -am "Add new version $currentVersion" --author="ADO Devops <ado@noemail.com>"
     # git push --set-upstream origin main 
     # $aa = 'pattoken'
-    # git push "https://$aa@github.com/defra-adp-sandpit/adp-helm-repository.git" Head:main
+    git push "https://$Token@github.com/defra-adp-sandpit/adp-helm-repository.git"
 
-    Write-Host "git push using token"
-    git checkout -b main
-    git remote remove origin
-    git remote add origin "https://$aa@github.com/defra-adp-sandpit/adp-helm-repository.git"
-    git push --set-upstream origin main
+    # Write-Host "git push using token"
+    # git checkout -b main
+    # git remote remove origin
+    # git remote add origin "https://$aa@github.com/defra-adp-sandpit/adp-helm-repository.git"
+    # git push --set-upstream origin main
 
     $exitCode = 0
 }

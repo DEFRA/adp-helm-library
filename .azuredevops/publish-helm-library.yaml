@@ -3,9 +3,12 @@ name: $(BuildID)
 trigger:
 - main
 
+# variables:
+#   user.email: "ganesh.b.ghadge@capgemini.com"
+#   user.name: "DevOps"
+
 variables:
-  user.email: "ganesh.b.ghadge@capgemini.com"
-  user.name: "DevOps"
+- group: github-adpplatform-access-token  
 
 pool:
   vmImage: windows-latest
@@ -60,4 +63,5 @@ steps:
       filePath: $(Agent.BuildDirectory)/ADPHelmLibrary/scripts/Publish-HelmLibrary.ps1
       arguments: >
         -HelmLibraryPath "$(Agent.BuildDirectory)\ADPHelmLibrary\adp-helm-library"
+        -Token $(github-adpplatform-access-token1)
       workingDirectory: $(System.DefaultWorkingDirectory) 

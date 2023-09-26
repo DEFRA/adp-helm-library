@@ -55,7 +55,7 @@ try {
     Invoke-CommandLine -Command $helmPackageCommand | Out-Null
     
     [version]$currentChartVersion = (Get-Content $HelmLibraryPath/Chart.yaml | ConvertFrom-Yaml).version
-    Write-Debug "currentVersion: $currentVersion"
+    Write-host "currentVersion: $currentVersion"
 
     [string]$packageName = Split-Path $HelmLibraryPath -Leaf
     [string]$packageNameWithVersion = "$packageName-$currentChartVersion.tgz"

@@ -95,13 +95,13 @@ try {
 
     [string]$commitMessage = "Add new version $ChartVersion"
     [string]$author = "ADO Devops <ado@noemail.com>"
-    [string]$gitCommitCommand = "git commit -am $commitMessage --author=$author"
+    [string]$gitCommitCommand = "git commit -am '$commitMessage' --author='$author'"
     Write-Host $gitCommitCommand
     Invoke-CommandLine -Command $gitCommitCommand | Out-Null
     
-    [string]$gitPushNameCommand = "git push --set-upstream origin main"
-    Write-Host $gitPushNameCommand
-    Invoke-CommandLine -Command $gitPushNameCommand | Out-Null
+    [string]$gitPushCommand = "git push --set-upstream origin main"
+    Write-Host $gitPushCommand
+    Invoke-CommandLine -Command $gitPushCommand | Out-Null
 
     $exitCode = 0
 }

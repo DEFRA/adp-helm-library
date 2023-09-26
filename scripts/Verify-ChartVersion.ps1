@@ -13,7 +13,9 @@ Helm library folder root path.
 [CmdletBinding()]
 param(
     [Parameter(Mandatory)] 
-    [string]$HelmLibraryPath
+    [string]$HelmLibraryPath,
+    [Parameter()]
+    [string]$WorkingDirectory = $PWD
 )
 
 Set-StrictMode -Version 3.0
@@ -35,9 +37,14 @@ if ($enableDebug) {
 
 Write-Host "${functionName} started at $($startTime.ToString('u'))"
 Write-Debug "${functionName}:HelmLibraryPath=$HelmLibraryPath"
+Write-Debug "${functionName}:WorkingDirectory=$WorkingDirectory"
 
 try {
     
+    [System.IO.DirectoryInfo]$moduleDir = Join-Path -Path $WorkingDirectory -ChildPath "scripts/modules/ps-helpers"
+    Write-Debug "${functionName}:moduleDir.FullName=$($moduleDir.FullName)"
+    Import-Module $moduleDir.FullName -Force
+
     if (-not (Get-Module -ListAvailable -Name 'powershell-yaml')) {
         Write-Host "powershell-yaml Module does not exists. Installing now.."
         Install-Module powershell-yaml -Force -Scope CurrentUser
@@ -52,10 +59,15 @@ try {
     [version]$currentVersion = (Get-Content $HelmLibraryPath/Chart.yaml | ConvertFrom-Yaml).version
     Write-Debug "currentVersion: $currentVersion"
 
-    # Fetch origin
-    git fetch origin
+    # Fetch origin    
+    [string]$gitFetchCommand = "git fetch origin"
+    Write-Host $gitFetchCommand
+    Invoke-CommandLine -Command $gitFetchCommand | Out-Null
 
-    [version]$previousVersion = (git show origin/main:adp-helm-library/Chart.yaml | ConvertFrom-Yaml).version
+    [string]$gitShowCommand = "git show origin/main:adp-helm-library/Chart.yaml"
+    Write-Host $gitShowCommand
+    $result =  Invoke-CommandLine -Command $gitShowCommand 
+    [version]$previousVersion = ($result | ConvertFrom-Yaml).version
     Write-Debug "previousVersion: $previousVersion"
 
     if($currentVersion -gt $previousVersion){

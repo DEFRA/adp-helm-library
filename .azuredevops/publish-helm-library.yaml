@@ -32,7 +32,7 @@ resources:
   repositories:
     - repository: ADPHelmRepository
       name: defra-adp-sandpit/adp-helm-repository-fork
-      endpoint: DEFRA
+      endpoint: defra-adp-sandpit
       type: github
       ref: main
 

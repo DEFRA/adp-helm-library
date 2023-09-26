@@ -50,6 +50,15 @@ try {
     Write-Debug "${functionName}:moduleDir.FullName=$($moduleDir.FullName)"
     Import-Module $moduleDir.FullName -Force
 
+    if (-not (Get-Module -ListAvailable -Name 'powershell-yaml')) {
+        Write-Host "powershell-yaml Module does not exists. Installing now.."
+        Install-Module powershell-yaml -Force
+        Write-Host "powershell-yaml Installed Successfully."
+    } 
+    else {
+        Write-Host "powershell-yaml Module exist"
+    }
+
     [string]$helmPackageCommand = "helm package $HelmLibraryPath"
     Write-Host $helmPackageCommand
     Invoke-CommandLine -Command $helmPackageCommand | Out-Null

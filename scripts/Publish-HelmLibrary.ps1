@@ -22,7 +22,9 @@ param(
     [Parameter(Mandatory)] 
     [string]$ChartVersion,
     [Parameter(Mandatory)] 
-    [string]$HelmChartRepoPublic
+    [string]$HelmChartRepoPublic,
+    [Parameter()]
+    [string]$WorkingDirectory = $PWD
 )
 
 Set-StrictMode -Version 3.0
@@ -46,14 +48,17 @@ Write-Host "${functionName} started at $($startTime.ToString('u'))"
 Write-Debug "${functionName}:HelmLibraryPath=$HelmLibraryPath"
 Write-Debug "${functionName}:ChartVersion=$ChartVersion"
 Write-Debug "${functionName}:HelmChartRepoPublic=$HelmChartRepoPublic"
+Write-Debug "${functionName}:WorkingDirectory=$WorkingDirectory"
 
 try {
-    Write-Host "Package Helm library chart"
-    helm package $HelmLibraryPath 
-    $exitCode = $LASTEXITCODE
-    if ($exitCode -ne 0) {
-      throw "Non zero exit code: $exitCode"
-    }
+
+    [System.IO.DirectoryInfo]$moduleDir = Join-Path -Path $WorkingDirectory -ChildPath "scripts/modules/ps-helpers"
+    Write-Debug "${functionName}:moduleDir.FullName=$($moduleDir.FullName)"
+    Import-Module $moduleDir.FullName -Force
+
+    [string]$helmPackageCommand = "helm package $HelmLibraryPath"
+    Write-Host $helmPackageCommand
+    Invoke-CommandLine -Command $helmPackageCommand | Out-Null
 
     [string]$packageName = Split-Path $HelmLibraryPath -Leaf
     [string]$packageNameWithVersion = "$packageName-$ChartVersion.tgz"
@@ -63,21 +68,41 @@ try {
     Write-Host "Set-Location to ADPHelmRepository"
     Set-Location ../ADPHelmRepository
 
-    helm repo index . --url $HelmChartRepoPublic
-    $exitCode = $LASTEXITCODE
-    if ($exitCode -ne 0) {
-      throw "Non zero exit code: $exitCode"
-    }
+    [string]$helmIndexCommand = "helm repo index . --url $HelmChartRepoPublic"
+    Write-Host $helmIndexCommand
+    Invoke-CommandLine -Command $helmIndexCommand | Out-Null
     
-    Write-Host "Configure git credentials"
-    git config user.email "ado@noemail.com"
-    git config user.name "Devops"
+    [string]$userEmail = "ado@noemail.com"
+    [string]$userName = "Devops"
 
-    Write-Host "git push package to adp-helm-repository"
-    git checkout -b main
-    git add $packageNameWithVersion
-    git commit -am "Add new version $ChartVersion" --author="ADO Devops <ado@noemail.com>"
-    git push --set-upstream origin main
+    [string]$gitUserEmailCommand = "git config user.email $userEmail"
+    Write-Host $gitUserEmailCommand
+    Invoke-CommandLine -Command $gitUserEmailCommand | Out-Null
+
+    [string]$gitUserNameCommand = "git config user.name $userName"
+    Write-Host $gitUserNameCommand
+    Invoke-CommandLine -Command $gitUserNameCommand | Out-Null
+    
+    Write-Host "Push package to adp-helm-repository.."
+    
+    [string]$gitCheckoutCommand = "git checkout -b main"
+    Write-Host $gitCheckoutCommand
+    Invoke-CommandLine -Command $gitCheckoutCommand | Out-Null
+    
+    [string]$gitStagingCommand = "git add $packageNameWithVersion"
+    Write-Host $gitStagingCommand
+    Invoke-CommandLine -Command $gitStagingCommand | Out-Null
+
+    [string]$commitMessage = "Add new version $ChartVersion"
+    [string]$author = "ADO Devops <ado@noemail.com>"
+    [string]$gitCommitCommand = "git commit -am $commitMessage --author=$author"
+    Write-Host $gitCommitCommand
+    Invoke-CommandLine -Command $gitCommitCommand | Out-Null
+    
+    [string]$gitPushNameCommand = "git push --set-upstream origin main"
+    Write-Host $gitPushNameCommand
+    Invoke-CommandLine -Command $gitPushNameCommand | Out-Null
+
     $exitCode = 0
 }
 catch {

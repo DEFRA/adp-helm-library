@@ -79,4 +79,4 @@ steps:
         -HelmLibraryPath "$(Agent.BuildDirectory)\ADPHelmLibrary\adp-helm-library"
         -ChartVersion $(ChartCurrentVersion)
         -HelmChartRepoPublic $(HelmChartRepoPublic)
-      workingDirectory: $(System.DefaultWorkingDirectory) 
+      workingDirectory: $(Agent.BuildDirectory)\ADPHelmLibrary

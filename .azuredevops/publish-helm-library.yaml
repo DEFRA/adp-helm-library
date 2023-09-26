@@ -5,7 +5,6 @@ trigger:
   branches:
     include:
       - 'main'
-      - 'gg/*'
 
 pr:
   branches:
@@ -16,26 +15,16 @@ pool:
   vmImage: windows-latest
 
 variables:
-  # - name: HelmChartRepoPublic
-  #   value: "https://raw.githubusercontent.com/defra/adp-helm-repository/main/" 
   - name: HelmChartRepoPublic
-    value: "https://raw.githubusercontent.com/defra-adp-sandpit/adp-helm-repository-fork/main/" 
-
-# resources:
-#   repositories:
-#     - repository: ADPHelmRepository
-#       name: defra/adp-helm-repository
-#       endpoint: DEFRA
-#       type: github
-#       ref: main
+    value: "https://raw.githubusercontent.com/defra/adp-helm-repository/main/" 
 
 resources:
   repositories:
     - repository: ADPHelmRepository
-      name: defra-adp-sandpit/adp-helm-repository-fork
-      endpoint: defra-adp-sandpit
+      name: defra/adp-helm-repository
+      endpoint: DEFRA
       type: github
-      ref: main      
+      ref: main
 
 steps:
   - checkout: self
@@ -56,21 +45,21 @@ steps:
       Write-Host 'Helm lint: End'
     displayName: 'Helm lint'   
 
-  # - task: PowerShell@2
-  #   displayName: 'Check Chart version Incremented'
-  #   condition: and(succeeded(), ne(variables['Build.SourceBranch'], 'refs/heads/main'))
-  #   inputs:
-  #     pwsh: true
-  #     azurePowerShellVersion: latestVersion
-  #     targetType: 'filePath'
-  #     filePath: $(Agent.BuildDirectory)\ADPHelmLibrary\scripts\Verify-ChartVersion.ps1
-  #     arguments: >
-  #       -HelmLibraryPath "$(Agent.BuildDirectory)\ADPHelmLibrary\adp-helm-library"
-  #     workingDirectory: $(Agent.BuildDirectory)\ADPHelmLibrary  
+  - task: PowerShell@2
+    displayName: 'Check Chart version Incremented'
+    condition: and(succeeded(), ne(variables['Build.SourceBranch'], 'refs/heads/main'))
+    inputs:
+      pwsh: true
+      azurePowerShellVersion: latestVersion
+      targetType: 'filePath'
+      filePath: $(Agent.BuildDirectory)\ADPHelmLibrary\scripts\Verify-ChartVersion.ps1
+      arguments: >
+        -HelmLibraryPath "$(Agent.BuildDirectory)\ADPHelmLibrary\adp-helm-library"
+      workingDirectory: $(Agent.BuildDirectory)\ADPHelmLibrary  
 
   - task: PowerShell@2
     displayName: 'Publish Helm Chart to Helm Repositiry(Github)'
-    # condition: and(succeeded(), eq(variables['Build.SourceBranch'], 'refs/heads/main'))
+    condition: and(succeeded(), eq(variables['Build.SourceBranch'], 'refs/heads/main'))
     inputs:
       pwsh: true
       azurePowerShellVersion: latestVersion

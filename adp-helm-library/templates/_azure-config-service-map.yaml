@@ -1,0 +1,43 @@
+{{- define "adp-helm-library.azure-config-service-map.tpl" -}}
+{{- $requiredMsg := include "adp-helm-library.default-check-required-msg" . -}}
+apiVersion: azconfig.io/v1beta1
+kind: AzureAppConfigurationProvider
+metadata:
+  name: {{ required (printf $requiredMsg "containerConfigMap.name") .Values.containerConfigMap.name | quote }}
+  labels:
+    {{- include "adp-helm-library.labels" . | nindent 4 }}
+spec:
+  endpoint: {{ required (printf $requiredMsg "containerConfigMap.configServiceUrl") .Values.containerConfigMap.configServiceUrl }}
+  target:
+    configMapName: {{ required (printf $requiredMsg "containerConfigMap.name") .Values.containerConfigMap.name | quote }}
+  auth:
+    workloadIdentity:
+      managedIdentityClientId: {{ required (printf $requiredMsg "containerConfigMap.auth.workloadIdentity.clientId") .Values.containerConfigMap.auth.workloadIdentity.clientId | quote }}
+  keyValues:
+    selectors:
+      - keyFilter: {{ .Values.containerConfigMap.keyValues.keyFilter | default "*" | quote }}
+        labelFilter: {{ required (printf $requiredMsg "containerConfigMap.keyValues.labelFilter") .Values.containerConfigMap.keyValues.labelFilter | quote }}
+    {{- if .Values.containerConfigMap.keyValues.keyVaults }}
+    keyVaults:
+      target:
+        secretName: {{ required (printf $requiredMsg "containerConfigMap.secretName") .Values.containerConfigMap.secretName | quote }}
+      auth:
+        workloadIdentity:
+          managedIdentityClientId: {{  .Values.containerConfigMap.keyValues.keyVaults.auth.workloadIdentity.clientId | quote }}
+      {{- if .Values.containerConfigMap.keyValues.keyVaults.refresh }}
+      refresh:
+        interval: {{ .Values.containerConfigMap.keyValues.keyVaults.refresh.interval | default 5m }}
+      {{- end }}
+    {{- end }}
+    {{- if .Values.containerConfigMap.keyValues.refresh }}
+    refresh:
+      interval: {{ .Values.containerConfigMap.keyValues.refresh.interval | default 5m }}
+      monitoring:
+        keyValues:
+          - key: {{ required (printf $requiredMsg "containerConfigMap.keyValues.refresh.monitorKey") .Values.containerConfigMap.keyValues.refresh.monitorKey }}
+            label: {{ required (printf $requiredMsg "containerConfigMap.keyValues.refresh.monitorLLabel") .Values.containerConfigMap.keyValues.refresh.monitorLLabel }}
+    {{- end }}
+{{- end }}
+{{- define "adp-helm-library.azure-config-service-map" -}}
+{{- include "adp-helm-library.util.merge" (append . "adp-helm-library.azure-config-service-map.tpl") -}}
+{{- end -}}

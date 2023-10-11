@@ -13,12 +13,10 @@ spec:
     configMapName: {{ required (printf $requiredMsg "containerConfigMap.name") .Values.containerConfigMap.name | quote }}
   auth:
     workloadIdentity:
-    {{- $configMapName := printf "%s-aso-mi-identity-settings" .Values.namespace }}
-    {{- $configmap := (lookup "v1" "ConfigMap" .Values.namespace $configMapName) }}
-    {{- if $configmap }}
-      {{- $clientId := get $configmap.data "clientId" }}
+      {{- $configMapName := printf "%s-aso-mi-identity-settings" .Values.namespace }}
+      {{- $configmap := (lookup "v1" "ConfigMap" .Values.namespace $configMapName) }}
+      {{- $clientId := get $configmap.data "clientId" }}      
       managedIdentityClientId: {{ $clientId }}
-    {{- end }}
   keyValues:
     selectors:
       - keyFilter: {{ .Values.containerConfigMap.keyValues.keyFilter | default "*" | quote }}

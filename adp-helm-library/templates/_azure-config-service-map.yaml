@@ -1,9 +1,10 @@
-{{- define "adp-helm-library.azure-config-service-map.tpl" -}}
+{{- define "adp-helm-library.azure-config-service-map" -}}
 {{- $requiredMsg := include "adp-helm-library.default-check-required-msg" . -}}
 apiVersion: azconfig.io/v1beta1
 kind: AzureAppConfigurationProvider
 metadata:
   name: {{ required (printf $requiredMsg "containerConfigMap.name") .Values.containerConfigMap.name | quote }}
+  namespace: {{ required (printf $requiredMsg "namespace") .Values.namespace | quote }}
   labels:
     {{- include "adp-helm-library.labels" . | nindent 4 }}
 spec:
@@ -12,7 +13,12 @@ spec:
     configMapName: {{ required (printf $requiredMsg "containerConfigMap.name") .Values.containerConfigMap.name | quote }}
   auth:
     workloadIdentity:
-      managedIdentityClientId: {{ required (printf $requiredMsg "containerConfigMap.auth.workloadIdentity.clientId") .Values.containerConfigMap.auth.workloadIdentity.clientId | quote }}
+    {{- $configMapName := printf "%s-aso-mi-identity-settings" .Values.namespace }}
+    {{- $configmap := (lookup "v1" "ConfigMap" .Values.namespace $configMapName) }}
+    {{- if $configmap }}
+      {{- $clientId := get $configmap.data "clientId" }}
+      managedIdentityClientId: {{ $clientId }}
+    {{- end }}
   keyValues:
     selectors:
       - keyFilter: {{ .Values.containerConfigMap.keyValues.keyFilter | default "*" | quote }}
@@ -20,24 +26,21 @@ spec:
     {{- if .Values.containerConfigMap.keyValues.keyVaults }}
     keyVaults:
       target:
-        secretName: {{ required (printf $requiredMsg "containerConfigMap.secretName") .Values.containerConfigMap.secretName | quote }}
+        secretName: {{ required (printf $requiredMsg "containerConfigMap.keyValues.keyVaults.secretName") .Values.containerConfigMap.keyValues.keyVaults.secretName | quote }}
       auth:
         workloadIdentity:
-          managedIdentityClientId: {{  .Values.containerConfigMap.keyValues.keyVaults.auth.workloadIdentity.clientId | quote }}
+          managedIdentityClientId: {{ $clientId }}
       {{- if .Values.containerConfigMap.keyValues.keyVaults.refresh }}
       refresh:
-        interval: {{ .Values.containerConfigMap.keyValues.keyVaults.refresh.interval | default 5m }}
+        interval: {{ required (printf $requiredMsg "containerConfigMap.keyValues.keyVaults.refresh.interval") .Values.containerConfigMap.keyValues.keyVaults.refresh.interval }}
       {{- end }}
     {{- end }}
     {{- if .Values.containerConfigMap.keyValues.refresh }}
     refresh:
-      interval: {{ .Values.containerConfigMap.keyValues.refresh.interval | default 5m }}
+      interval: {{ .Values.containerConfigMap.keyValues.refresh.interval }}
       monitoring:
         keyValues:
           - key: {{ required (printf $requiredMsg "containerConfigMap.keyValues.refresh.monitorKey") .Values.containerConfigMap.keyValues.refresh.monitorKey }}
-            label: {{ required (printf $requiredMsg "containerConfigMap.keyValues.refresh.monitorLLabel") .Values.containerConfigMap.keyValues.refresh.monitorLLabel }}
+            label: {{ required (printf $requiredMsg "containerConfigMap.keyValues.refresh.monitorLabel") .Values.containerConfigMap.keyValues.refresh.monitorLabel }}
     {{- end }}
 {{- end }}
-{{- define "adp-helm-library.azure-config-service-map" -}}
-{{- include "adp-helm-library.util.merge" (append . "adp-helm-library.azure-config-service-map.tpl") -}}
-{{- end -}}

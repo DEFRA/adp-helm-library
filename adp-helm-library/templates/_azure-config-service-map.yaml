@@ -13,7 +13,7 @@ spec:
     configMapName: {{ required (printf $requiredMsg "containerConfigMap.name") .Values.containerConfigMap.name | quote }}
   auth:
     workloadIdentity:
-      managedIdentityClientId: {{ required (printf $requiredMsg "auth.workloadIdentity.clientId") .Values.auth.workloadIdentity.clientId }}
+      managedIdentityClientId: {{ required (printf $requiredMsg "containerConfigMap.auth.workloadIdentity.clientId") .Values.containerConfigMap.auth.workloadIdentity.clientId }}
   keyValues:
     selectors:
       - keyFilter: {{ .Values.containerConfigMap.keyValues.keyFilter | default "*" | quote }}
@@ -24,7 +24,7 @@ spec:
         secretName: {{ required (printf $requiredMsg "containerConfigMap.keyValues.keyVaults.secretName") .Values.containerConfigMap.keyValues.keyVaults.secretName | quote }}
       auth:
         workloadIdentity:
-          managedIdentityClientId: {{ required (printf $requiredMsg "auth.workloadIdentity.clientId") .Values.auth.workloadIdentity.clientId }}
+          managedIdentityClientId: {{ required (printf $requiredMsg "containerConfigMap.auth.workloadIdentity.clientId") .Values.containerConfigMap.auth.workloadIdentity.clientId }}
       {{- if .Values.containerConfigMap.keyValues.keyVaults.refresh }}
       refresh:
         interval: {{ required (printf $requiredMsg "containerConfigMap.keyValues.keyVaults.refresh.interval") .Values.containerConfigMap.keyValues.keyVaults.refresh.interval }}

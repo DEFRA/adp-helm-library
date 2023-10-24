@@ -20,7 +20,7 @@ resources:
       name: DEFRA/adp-pipeline-common
       endpoint: DEFRA
       type: github
-      ref: gg/248953-ACRPublish-template
+      ref: main
 
 extends:
   template: /pipelines/common-helm-library-publish.yaml@DEFRA-ADPPipelineCommon

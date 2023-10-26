@@ -1,10 +1,10 @@
 name: $(BuildID)
 
-trigger:
-  batch: true
-  branches:
-    include:
-      - 'main'
+# trigger:
+#   batch: true
+#   branches:
+#     include:
+#       - 'main'
 
 pr:
   branches:
@@ -20,10 +20,10 @@ resources:
       name: DEFRA/adp-pipeline-common
       endpoint: DEFRA
       type: github
-      ref: gg/250126-GitPublish-template
+      ref: main
 
 extends:
   template: /pipelines/common-helm-library-git-publish.yaml@DEFRA-ADPPipelineCommon
   parameters:
     helmLibraryName: 'adp-helm-library'
-    chartRepoPublicUrl: 'https://raw.githubusercontent.com/defra/adp-helm-repository/gg/250126-publish-multiple-libraries/adp-helm-library/'
+    chartRepoPublicUrl: 'https://raw.githubusercontent.com/defra/adp-helm-repository/main/adp-helm-library/'

@@ -23,7 +23,7 @@ resources:
       ref: main
 
 extends:
-  template: /pipelines/common-helm-library-git-publish.yaml@DEFRA-ADPPipelineCommon
+  template: /pipelines/common-helm-library-git-publish.yaml@DEFRA-ADPPipelineCommon 
   parameters:
     helmLibraryName: 'adp-helm-library'
     chartRepoPublicUrl: 'https://raw.githubusercontent.com/defra/adp-helm-repository/main/adp-helm-library/'

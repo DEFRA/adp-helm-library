@@ -1,15 +1,15 @@
 name: $(BuildID)
 
-trigger:
-  batch: true
-  branches:
-    include:
-      - 'main'
+# trigger:
+#   batch: true
+#   branches:
+#     include:
+#       - 'main'
 
-pr:
-  branches:
-    include:
-      - main
+# pr:
+#   branches:
+#     include:
+#       - main
 
 pool:
   vmImage: windows-latest

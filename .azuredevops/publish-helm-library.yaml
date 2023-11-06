@@ -15,7 +15,7 @@ trigger:
 pr:
   branches:
     include:
-      - main
+      - features/config-data
 
 pool:
   vmImage: windows-latest

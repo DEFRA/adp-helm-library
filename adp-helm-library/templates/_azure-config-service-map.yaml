@@ -21,6 +21,8 @@ spec:
       {{- if $configmap }}
       {{- $clientId := get $configmap.data "clientId" }}
       managedIdentityClientId: {{ $clientId }}
+      {{ else }}
+      managedIdentityClientId: ''
       {{- end }}
   keyValues:
     selectors:
@@ -35,6 +37,8 @@ spec:
           {{- if $configmap }}
           {{- $clientId := get $configmap.data "clientId" }}
           managedIdentityClientId: {{ $clientId }}
+          {{ else }}
+          managedIdentityClientId: ''
           {{- end }}
       {{- if .Values.containerConfigMap.keyValues.keyVaults.refresh }}
       refresh:

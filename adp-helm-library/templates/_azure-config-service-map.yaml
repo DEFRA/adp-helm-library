@@ -34,7 +34,7 @@ spec:
       target:
         secretName: {{ printf "%s-secret" .Values.name | quote }}
       {{- $managedIdPrefix := (required (printf $requiredMsg "managedIdPrefix") .Values.managedIdPrefix) | lower }}
-      {{- $managedIdSuffix := (required (printf $requiredMsg "userAssignedIdentity.managedIdName") .Values.userAssignedIdentity.managedIdName) | lower }}
+      {{- $managedIdSuffix := .Values.name | lower }}
       {{- $managedIdName :=  printf "%s-%s" $managedIdPrefix $managedIdSuffix }}
       {{- $configMapName := printf "%s-mi-identity-settings" $managedIdName }}
       {{- $configmap := (lookup "v1" "ConfigMap" .Values.namespace $configMapName) }}

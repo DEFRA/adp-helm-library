@@ -18,7 +18,7 @@ spec:
   {{- if .Values.containerConfigMap }}
   auth:
     workloadIdentity:
-      managedIdentityClientId: {{ .Values.containerConfigMap.configServiceMI }}
+      managedIdentityClientId: {{ .Values.containerConfigMap.configServiceMIClientId }}
   {{- end }}
   keyValues:
     selectors:
@@ -33,16 +33,10 @@ spec:
     keyVaults:
       target:
         secretName: {{ printf "%s-secret" .Values.name | quote }}
-      {{- $managedIdPrefix := (required (printf $requiredMsg "managedIdPrefix") .Values.managedIdPrefix) | lower }}
-      {{- $managedIdSuffix := .Values.name | lower }}
-      {{- $managedIdName :=  printf "%s-%s" $managedIdPrefix $managedIdSuffix }}
-      {{- $configMapName := printf "%s-mi-identity-settings" $managedIdName }}
-      {{- $configmap := (lookup "v1" "ConfigMap" .Values.namespace $configMapName) }}
-      {{- if $configmap }}
+      {{- if .Values.containerConfigMap }}
       auth:
         workloadIdentity:
-          {{- $clientId := get $configmap.data "clientId" }}
-          managedIdentityClientId: {{ $clientId }}
+          managedIdentityClientId: {{ .Values.containerConfigMap.serviceMIClientId }}
       {{- end }}
       {{- if and .Values.containerConfigMap .Values.containerConfigMap.keyValues .Values.containerConfigMap.keyValues.keyVaults .Values.containerConfigMap.keyValues.keyVaults.refresh }}
       refresh:

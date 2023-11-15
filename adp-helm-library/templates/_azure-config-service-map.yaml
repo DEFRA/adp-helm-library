@@ -33,11 +33,9 @@ spec:
     keyVaults:
       target:
         secretName: {{ printf "%s-secret" .Values.name | quote }}
-      {{- if .Values.containerConfigMap }}
       auth:
         workloadIdentity:
-          managedIdentityClientId: {{ .Values.containerConfigMap.serviceMIClientId }}
-      {{- end }}
+          managedIdentityClientId: {{ .Values.clientId }}
       {{- if and .Values.containerConfigMap .Values.containerConfigMap.keyValues .Values.containerConfigMap.keyValues.keyVaults .Values.containerConfigMap.keyValues.keyVaults.refresh }}
       refresh:
         interval: {{ .Values.containerConfigMap.keyValues.keyVaults.refresh.interval }}

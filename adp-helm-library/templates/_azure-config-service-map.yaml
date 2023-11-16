@@ -1,6 +1,6 @@
 {{- define "adp-helm-library.azure-config-service-map" -}}
 {{- $requiredMsg := include "adp-helm-library.default-check-required-msg" . -}}
-apiVersion: azconfig.io/v1beta1
+apiVersion: azconfig.io/v1
 kind: AzureAppConfigurationProvider
 metadata:
   name: {{ required (printf $requiredMsg "name") (printf "%s-config-map" .Values.name) | quote }}
@@ -40,14 +40,15 @@ spec:
         workloadIdentity:
           managedIdentityClientId: {{ .Values.containerConfigMap.serviceMIClientId }}
       {{- end }}
-      {{- if and .Values.containerConfigMap .Values.containerConfigMap.keyValues .Values.containerConfigMap.keyValues.keyVaults .Values.containerConfigMap.keyValues.keyVaults.refresh }}
       refresh:
+        enabled: true
+        {{- if and .Values.containerConfigMap .Values.containerConfigMap.keyValues .Values.containerConfigMap.keyValues.keyVaults .Values.containerConfigMap.keyValues.keyVaults.refresh }}
         interval: {{ .Values.containerConfigMap.keyValues.keyVaults.refresh.interval }}
-      {{- else}}
-      refresh:
+        {{- else}}
         interval: "5m"
-      {{- end }}
+        {{- end }}
     refresh:
+      enabled: true
       {{- if and .Values.containerConfigMap .Values.containerConfigMap.keyValues .Values.containerConfigMap.keyValues.refresh }}
       interval: {{ .Values.containerConfigMap.keyValues.refresh.interval }}
       {{- else}}

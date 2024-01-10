@@ -20,6 +20,62 @@ app.kubernetes.io/managed-by: {{ .Release.Service }}
 helm.sh/chart: {{ .Chart.Name }}-{{ .Chart.Version | replace "+" "_" }}
 {{- end -}}
 
+{{- define "adp-helm-library.mem-cpu-tiers" -}}
+{{- $requiredMsg := include "adp-helm-library.default-check-required-msg" . -}}
+{{- $memCpuTier := $.Values.container.memCpuTier }}
+
+{{- $requestsMemory := "50mi" }}
+{{- $requestsCpu := "50m" }}
+{{- $limitsMemory := "50mi" }}
+{{- $limitsCpu := "50m" }}
+
+{{- if eq $memCpuTier "S" }}
+{{- $requestsMemory = "50mi" }}
+{{- $requestsCpu = "50m" }}
+{{- $limitsMemory = "50mi" }}
+{{- $limitsCpu = "50m" }}
+
+{{- else if eq $memCpuTier "M" }}
+{{- $requestsMemory = "100mi" }}
+{{- $requestsCpu = "100m" }}
+{{- $limitsMemory = "100mi" }}
+{{- $limitsCpu = "100m" }}
+
+{{- else if eq $memCpuTier "L" }}
+{{- $requestsMemory = "150mi" }}
+{{- $requestsCpu = "150m" }}
+{{- $limitsMemory = "150mi" }}
+{{- $limitsCpu = "150m" }}
+
+{{- else if eq $memCpuTier "XL" }}
+{{- $requestsMemory = "200mi" }}
+{{- $requestsCpu = "200m" }}
+{{- $limitsMemory = "200mi" }}
+{{- $limitsCpu = "200m" }}
+
+{{- else if eq $memCpuTier "XXL" }}
+{{- $requestsMemory = "200mi" }}
+{{- $requestsCpu = "200m" }}
+{{- $limitsMemory = "500mi" }}
+{{- $limitsCpu = "500m" }}
+
+{{- else if eq $memCpuTier "CUSTOM" }}
+{{- $requestsMemory = required (printf $requiredMsg "container.requestMemory") .Values.container.requestMemory | quote }}
+{{- $requestsCpu = required (printf $requiredMsg "container.requestCpu") .Values.container.requestCpu | quote }}
+{{- $limitsMemory = required (printf $requiredMsg "container.limitMemory") .Values.container.limitMemory | quote }}
+{{- $limitsCpu = required (printf $requiredMsg "container.limitCpu") .Values.container.limitCpu | quote }}
+
+{{- else }}
+{{- fail (printf "Value for memCpuTier is not as expected. '%s' memCpuTier is not in the allowed memCpuTiers (S,M,X,XL,XXL,CUSTOM)." $memCpuTier) }}
+{{- end }}
+  requests:
+    memory: {{ $requestsMemory }}
+    cpu: {{ $requestsCpu }}
+  limits:
+    memory: {{ $limitsMemory }}
+    cpu: {{ $limitsCpu }}
+{{- end }}
+
 {{/*
 Selector labels
 */}}

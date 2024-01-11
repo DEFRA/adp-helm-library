@@ -24,39 +24,39 @@ helm.sh/chart: {{ .Chart.Name }}-{{ .Chart.Version | replace "+" "_" }}
 {{- $requiredMsg := include "adp-helm-library.default-check-required-msg" . -}}
 {{- $memCpuTier := $.Values.container.memCpuTier }}
 
-{{- $requestsMemory := "50mi" }}
+{{- $requestsMemory := "50Mi" }}
 {{- $requestsCpu := "50m" }}
-{{- $limitsMemory := "50mi" }}
+{{- $limitsMemory := "50Mi" }}
 {{- $limitsCpu := "50m" }}
 
 {{- if eq $memCpuTier "S" }}
-{{- $requestsMemory = "50mi" }}
+{{- $requestsMemory = "50Mi" }}
 {{- $requestsCpu = "50m" }}
-{{- $limitsMemory = "50mi" }}
+{{- $limitsMemory = "50Mi" }}
 {{- $limitsCpu = "50m" }}
 
 {{- else if eq $memCpuTier "M" }}
-{{- $requestsMemory = "100mi" }}
+{{- $requestsMemory = "100Mi" }}
 {{- $requestsCpu = "100m" }}
-{{- $limitsMemory = "100mi" }}
+{{- $limitsMemory = "100Mi" }}
 {{- $limitsCpu = "100m" }}
 
 {{- else if eq $memCpuTier "L" }}
-{{- $requestsMemory = "150mi" }}
+{{- $requestsMemory = "150Mi" }}
 {{- $requestsCpu = "150m" }}
-{{- $limitsMemory = "150mi" }}
+{{- $limitsMemory = "150Mi" }}
 {{- $limitsCpu = "150m" }}
 
 {{- else if eq $memCpuTier "XL" }}
-{{- $requestsMemory = "200mi" }}
+{{- $requestsMemory = "200Mi" }}
 {{- $requestsCpu = "200m" }}
-{{- $limitsMemory = "200mi" }}
+{{- $limitsMemory = "200Mi" }}
 {{- $limitsCpu = "200m" }}
 
 {{- else if eq $memCpuTier "XXL" }}
-{{- $requestsMemory = "200mi" }}
+{{- $requestsMemory = "200Mi" }}
 {{- $requestsCpu = "200m" }}
-{{- $limitsMemory = "500mi" }}
+{{- $limitsMemory = "500Mi" }}
 {{- $limitsCpu = "500m" }}
 
 {{- else if eq $memCpuTier "CUSTOM" }}

@@ -20,14 +20,17 @@ app.kubernetes.io/managed-by: {{ .Release.Service }}
 helm.sh/chart: {{ .Chart.Name }}-{{ .Chart.Version | replace "+" "_" }}
 {{- end -}}
 
+{{/*
+CPU and Memory requests and limits Tiers
+*/}}
 {{- define "adp-helm-library.mem-cpu-tiers" -}}
 {{- $requiredMsg := include "adp-helm-library.default-check-required-msg" . -}}
-{{- $memCpuTier := $.Values.container.memCpuTier }}
+{{- $memCpuTier := $.Values.container.memCpuTier | default "M" }}
 
-{{- $requestsMemory := "50Mi" }}
-{{- $requestsCpu := "50m" }}
-{{- $limitsMemory := "50Mi" }}
-{{- $limitsCpu := "50m" }}
+{{- $requestsMemory := "" }}
+{{- $requestsCpu := "" }}
+{{- $limitsMemory := "" }}
+{{- $limitsCpu := "" }}
 
 {{- if eq $memCpuTier "S" }}
 {{- $requestsMemory = "50Mi" }}
@@ -54,10 +57,10 @@ helm.sh/chart: {{ .Chart.Name }}-{{ .Chart.Version | replace "+" "_" }}
 {{- $limitsCpu = "200m" }}
 
 {{- else if eq $memCpuTier "XXL" }}
-{{- $requestsMemory = "200Mi" }}
-{{- $requestsCpu = "200m" }}
-{{- $limitsMemory = "500Mi" }}
-{{- $limitsCpu = "500m" }}
+{{- $requestsMemory = "300Mi" }}
+{{- $requestsCpu = "300m" }}
+{{- $limitsMemory = "600Mi" }}
+{{- $limitsCpu = "600m" }}
 
 {{- else if eq $memCpuTier "CUSTOM" }}
 {{- $requestsMemory = required (printf $requiredMsg "container.requestMemory") .Values.container.requestMemory | quote }}

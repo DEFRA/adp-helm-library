@@ -155,11 +155,6 @@ The following values can optionally be set in the parent chart's `values.yaml` t
 
 ```
 container:
-  memCpuTier: <string S|M|L|XL|XXL|CUSTOM>
-  requestMemory: <string - REQUIRED if memCpuTier is CUSTOM>
-  requestCpu: <string - REQUIRED if memCpuTier is CUSTOM>
-  limitMemory: <string - REQUIRED if memCpuTier is CUSTOM>
-  limitCpu: <string - REQUIRED if memCpuTier is CUSTOM>
   imagePullPolicy: <string>
   command: <list of strings>
   args: <list of strings>

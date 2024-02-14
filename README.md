@@ -319,7 +319,7 @@ serviceAccount:
 * Template file: `_ingress.yaml`
 * Template name: `adp-helm-library.ingress`
 
-A K8s `Ingress` object that can be configured for Nginx
+A K8s `Ingress` object that can be configured for Nginx. Note: this is by default managed for the service. All services will use the Nginx Ingress Controller.
 
 A basic Nginx `Ingress` object would involve the creation of `templates/ingress.yaml` in the parent Helm chart (e.g. `adp-microservice`) containing:
 

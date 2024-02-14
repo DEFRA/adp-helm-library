@@ -25,9 +25,7 @@ spec:
     spec:
       priorityClassName: {{ .Values.deployment.priorityClassName| default "default" | quote }}
       {{- if .Values.serviceAccount }}
-      {{- if .Values.serviceAccount.roleArn }}
       serviceAccountName: {{ .Values.serviceAccount.name | quote }}
-      {{- end }}
       {{- end }}
       restartPolicy: {{ .Values.deployment.restartPolicy | default "Always" | quote }}
       {{- if .Values.deployment.imagePullSecret }}

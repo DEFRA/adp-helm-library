@@ -283,24 +283,10 @@ deployment:
   minReadySeconds: <integer>
 ```
 
-The following value can be optionally set if a Linkerd sidecar pod should be deployed.  Only required if the application has any web traffic.
-
-```
-deployment:
-  useLinkerd: true
-```
-
-The following value can optionally be set in the parent chart's `values.yaml` to enable azure-workload-identity. Enabling this flag will add 'azure.workload.identity/use' label to deployment template spec:
+The following follow is enabled by default for all services. We expect all services to use Azure Workload Identities. This flag will add 'azure.workload.identity/use' label to deployment template spec:
 
 ```
 aadWorkloadIdentity: true
-```
-
-The following value can optionally be set in the parent chart's `values.yaml` to link the deployment to a service account K8s object:
-
-```
-serviceAccount:
-  name: <string>
 ```
 
 ### Service account template

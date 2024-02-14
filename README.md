@@ -15,7 +15,7 @@ helm repo update
 helm dependency update <helm_chart_location>
 ```
 
-An example FFC microservice `Chart.yaml`:
+An example ADP microservice `Chart.yaml`:
 
 ```
 apiVersion: v2
@@ -301,7 +301,6 @@ The following value can optionally be set in the parent chart's `values.yaml` to
 ```
 serviceAccount:
   name: <string>
-  roleArn: <string>
 ```
 
 ### Service account template
@@ -320,22 +319,6 @@ A basic usage of this object template would involve the creation of `templates/s
 {{- end -}}
 ```
 
-### EKS service account template
-
-* Template file: `_eks-service-account.yaml`
-* Template name: `adp-helm-library.eks-service-account`
-
-A K8s `ServiceAccount` object configured for use on AWS's managed K8s service EKS.
-
-A basic usage of this object template would involve the creation of `templates/eks-service-account.yaml` in the parent Helm chart (e.g. `ffc-microservice`) containing:
-
-```
-{{- include "adp-helm-library.eks-service-account" (list . "adp-microservice.eks-service-account") -}}
-{{- define "adp-microservice.eks-service-account" -}}
-# Microservice specific configuration in here
-{{- end -}}
-```
-
 #### Required values
 
 The following values need to be set in the parent chart's `values.yaml` in addition to the globally required values [listed above](#all-template-required-values):
@@ -343,7 +326,6 @@ The following values need to be set in the parent chart's `values.yaml` in addit
 ```
 serviceAccount:
   name: <string>
-  roleArn: <string>
 ```
 
 ### Ingress template

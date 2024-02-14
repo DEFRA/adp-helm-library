@@ -19,8 +19,8 @@ An example ADP microservice `Chart.yaml`:
 
 ```
 apiVersion: v2
-description: A Helm chart to deploy a microservice to the FFC Kubernetes platform
-name: ffc-microservice
+description: A Helm chart to deploy a microservice to the ADP Azure Kubernetes platform
+name: adp-microservice
 version: 1.0.0
 dependencies:
 - name: adp-helm-library
@@ -30,9 +30,9 @@ dependencies:
 
 ## Using the K8s object templates
 
-First, follow [the instructions](#including-the-library-chart) for including the FFC Helm library chart.
+First, follow [the instructions](#including-the-library-chart) for including the ADP Helm library chart.
 
-The ADP Helm library chart has been configured using the conventions described in the [Helm library chart documentation](https://helm.sh/docs/topics/library_charts/). The K8s object templates provide settings shared by all objects of that type, which can be augmented with extra settings from the parent (FFC microservice) chart. The library object templates will merge the library and parent templates. In the case where settings are defined in both the library and parent chart, the parent chart settings will take precedence, so library chart settings can be overridden. The library object templates will expect values to be set in the parent `.values.yaml`. Any required values (defined for each template below) that are not provided will result in an error message when processing the template (`helm install`, `helm upgrade`, `helm template`).
+The ADP Helm library chart has been configured using the conventions described in the [Helm library chart documentation](https://helm.sh/docs/topics/library_charts/). The K8s object templates provide settings shared by all objects of that type, which can be augmented with extra settings from the parent (ADP microservice) chart. The library object templates will merge the library and parent templates. In the case where settings are defined in both the library and parent chart, the parent chart settings will take precedence, so library chart settings can be overridden. The library object templates will expect values to be set in the parent `.values.yaml`. Any required values (defined for each template below) that are not provided will result in an error message when processing the template (`helm install`, `helm upgrade`, `helm template`).
 
 The general strategy for using one of the library templates in the parent microservice Helm chart is to create a template for the K8s object formateted as so:
 
@@ -43,7 +43,7 @@ The general strategy for using one of the library templates in the parent micros
 {{- end -}}
 ```
 
-This example would be for `template/secret.yaml` in the `ffc-microservice` Helm chart. The initial `include` statement can be wrapped in an `if` statement if you only wish to create the K8s object based on a condition. E.g., only create the secret is a `pr` value has been set in `values.yaml`:
+This example would be for `template/secret.yaml` in the `adp-microservice` Helm chart. The initial `include` statement can be wrapped in an `if` statement if you only wish to create the K8s object based on a condition. E.g., only create the secret is a `pr` value has been set in `values.yaml`:
 
 ```
 {{- if .Values.pr }}
@@ -71,7 +71,7 @@ namespace: <string>
 
 A K8s `Service` object of type `ClusterIP`.
 
-A basic usage of this object template would involve the creation of `templates/cluster-ip-service.yaml` in the parent Helm chart (e.g. `ffc-microservice`) containing:
+A basic usage of this object template would involve the creation of `templates/cluster-ip-service.yaml` in the parent Helm chart (e.g. `adp-microservice`) containing:
 
 ```
 {{- include "adp-helm-library.cluster-ip-service" (list . "adp-microservice.service") -}}
@@ -95,7 +95,7 @@ container:
 
 A template for the container definition to be used within a K8s `Deployment` object.
 
-A basic usage of this object template would involve the creation of `templates/_container.yaml` in the parent Helm chart (e.g. `ffc-microservice`). Note the `_` in the name. This template is part of the `Deployment` object definition and will be used in conjunction the `_deployment.yaml` template ([see below](#deployment-template)). As a minimum `templates/_container.yaml` would define environment variables and may also include liveness/readiness probes when applicable e.g.:
+A basic usage of this object template would involve the creation of `templates/_container.yaml` in the parent Helm chart (e.g. `adp-microservice`). Note the `_` in the name. This template is part of the `Deployment` object definition and will be used in conjunction the `_deployment.yaml` template ([see below](#deployment-template)). As a minimum `templates/_container.yaml` would define environment variables and may also include liveness/readiness probes when applicable e.g.:
 
 ```
 {{- define "adp-microservice.container" -}}
@@ -169,7 +169,7 @@ container:
 
 A K8s `ConfigMap` object object to host non-sensitive container configuration data.
 
-A basic usage of this object template would involve the creation of `templates/containter-config-map.yaml` in the parent Helm chart (e.g. `ffc-microservice`), which should include the `data` map containing the configuration data:
+A basic usage of this object template would involve the creation of `templates/containter-config-map.yaml` in the parent Helm chart (e.g. `adp-microservice`), which should include the `data` map containing the configuration data:
 
 ```
 {{- include "adp-helm-library.containter-config-map" (list . "adp-microservice.containter-config-map") -}}
@@ -196,7 +196,7 @@ containerConfigMap:
 
 A K8s `ConfigMap` object to host non-sensitive container configuration data read from the Azure Application Configuration Service.
 
-A basic usage of this object template would involve the creation of `templates/azure-config-service-map.yaml` in the parent Helm chart (e.g. `ffc-microservice`) containing:
+A basic usage of this object template would involve the creation of `templates/azure-config-service-map.yaml` in the parent Helm chart (e.g. `adp-microservice`) containing:
 
 ```
 {{- include "adp-helm-library.azure-config-service-map" . -}}
@@ -226,7 +226,7 @@ containerConfigMap:
 
 A K8s `Secret` object to host sensitive data such as a password or token in a container.
 
-A basic usage of this object template would involve the creation of `templates/containter-secret.yaml` in the parent Helm chart (e.g. `ffc-microservice`), which should include the `data` map containing the sensitive data :
+A basic usage of this object template would involve the creation of `templates/containter-secret.yaml` in the parent Helm chart (e.g. `adp-microservice`), which should include the `data` map containing the sensitive data :
 
 ```
 {{- include "adp-helm-library.containter-secret" (list . "adp-microservice.containter-secret") -}}
@@ -254,7 +254,7 @@ containerSecret:
 
 A K8s `Deployment` object.
 
-A basic usage of this object template would involve the creation of `templates/deployment.yaml` in the parent Helm chart (e.g. `ffc-microservice`) that includes the template defined in `_container.yaml` template:
+A basic usage of this object template would involve the creation of `templates/deployment.yaml` in the parent Helm chart (e.g. `adp-microservice`) that includes the template defined in `_container.yaml` template:
 
 ```
 {{- include "adp-helm-library.deployment" (list . "adp-microservice.deployment") -}}
@@ -310,7 +310,7 @@ serviceAccount:
 
 A K8s `ServiceAccount` object.
 
-A basic usage of this object template would involve the creation of `templates/service-account.yaml` in the parent Helm chart (e.g. `ffc-microservice`) containing:
+A basic usage of this object template would involve the creation of `templates/service-account.yaml` in the parent Helm chart (e.g. `adp-microservice`) containing:
 
 ```
 {{- include "adp-helm-library.service-account" (list . "adp-microservice.service-account") -}}
@@ -335,7 +335,7 @@ serviceAccount:
 
 A K8s `Ingress` object that can be configured for Nginx
 
-A basic Nginx `Ingress` object would involve the creation of `templates/ingress.yaml` in the parent Helm chart (e.g. `ffc-microservice`) containing:
+A basic Nginx `Ingress` object would involve the creation of `templates/ingress.yaml` in the parent Helm chart (e.g. `adp-microservice`) containing:
 
 ```
 {{- include "adp-helm-library.ingress" (list . "adp-microservice.ingress") -}}
@@ -345,7 +345,7 @@ metadata:
     <map_of_nginx-ingress-annotations>
 {{- end -}}
 ```
-A basic ALB `Ingress` object would involve the creation of `templates/ingress-alb.yaml` in the parent Helm chart (e.g. `ffc-microservice`) containing:
+A basic ALB `Ingress` object would involve the creation of `templates/ingress-alb.yaml` in the parent Helm chart (e.g. `adp-microservice`) containing:
 
 ```
 {{- include "adp-helm-library.ingress" (list . "adp-microservice.ingress-alb") -}}
@@ -386,7 +386,7 @@ ingress:
 
 A K8s `Ingress` object that can be configured for Nginx for use in Azure.
 
-A basic Nginx `Ingress` object would involve the creation of `templates/ingress.yaml` in the parent Helm chart (e.g. `ffc-microservice`) containing:
+A basic Nginx `Ingress` object would involve the creation of `templates/ingress.yaml` in the parent Helm chart (e.g. `adp-microservice`) containing:
 
 ```
 {{- include "adp-helm-library.azure-ingress" (list . "adp-microservice.ingress") -}}
@@ -436,7 +436,7 @@ A K8s `Ingress` object that can be configured for Nginx for use in Azure with a 
 
 Although the `Azure Ingress template` can also be used to create `master` mergeable ingress types.  This template exists to support scenarios where a Helm chart needs to contain both a `master` and a `minion` resource without conflicts in value properties.
 
-A basic Nginx `Ingress` object would involve the creation of `templates/ingress.yaml` in the parent Helm chart (e.g. `ffc-microservice`) containing:
+A basic Nginx `Ingress` object would involve the creation of `templates/ingress.yaml` in the parent Helm chart (e.g. `adp-microservice`) containing:
 
 ```
 {{- include "adp-helm-library.azure-ingress-master" (list . "adp-microservice.ingress") -}}
@@ -475,7 +475,7 @@ ingress:
 
 A K8s `Service` object of type `ExternalName` configured to refer to a Postgres database hosted on a server outside of the K8s cluster
 
-A basic usage of this object template would involve the creation of `templates/postgres-service.yaml` in the parent Helm chart (e.g. `ffc-microservice`) containing:
+A basic usage of this object template would involve the creation of `templates/postgres-service.yaml` in the parent Helm chart (e.g. `adp-microservice`) containing:
 
 ```
 {{- include "adp-helm-library.postgres-service" (list . "adp-microservice.postgres-service") -}}
@@ -502,7 +502,7 @@ postgresService:
 
 A K8s `RoleBinding` object used to bind a role to a user as part of RBAC configuration in the K8s cluster.
 
-A basic usage of this object template would involve the creation of `templates/role-binding.yaml` in the parent Helm chart (e.g. `ffc-microservice`) containing:
+A basic usage of this object template would involve the creation of `templates/role-binding.yaml` in the parent Helm chart (e.g. `adp-microservice`) containing:
 
 ```
 {{- include "adp-helm-library.role-binding" (list . "adp-microservice.role-binding") -}}
@@ -518,7 +518,7 @@ A basic usage of this object template would involve the creation of `templates/r
 
 A K8s `Secret` object to host sensitive data such as a password or token.
 
-A basic usage of this object template would involve the creation of `templates/secret.yaml` in the parent Helm chart (e.g. `ffc-microservice`), which should include the `data` map containing the sensitive data :
+A basic usage of this object template would involve the creation of `templates/secret.yaml` in the parent Helm chart (e.g. `adp-microservice`), which should include the `data` map containing the sensitive data :
 
 ```
 {{- include "adp-helm-library.secret" (list . "adp-microservice.secret") -}}
@@ -546,7 +546,7 @@ secret:
 
 A generic K8s `Service` object requiring a service type to be set.
 
-A basic usage of this object template would involve the creation of `templates/secret.yaml` in the parent Helm chart (e.g. `ffc-microservice`) containing:
+A basic usage of this object template would involve the creation of `templates/secret.yaml` in the parent Helm chart (e.g. `adp-microservice`) containing:
 
 ```
 {{- include "adp-helm-library.service" (list . "adp-microservice.service") -}}

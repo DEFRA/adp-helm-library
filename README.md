@@ -333,7 +333,7 @@ serviceAccount:
 * Template file: `_ingress.yaml`
 * Template name: `adp-helm-library.ingress`
 
-A K8s `Ingress` object that can be configured for Nginx or AWS ALB (Amazon Load Balancer).
+A K8s `Ingress` object that can be configured for Nginx
 
 A basic Nginx `Ingress` object would involve the creation of `templates/ingress.yaml` in the parent Helm chart (e.g. `ffc-microservice`) containing:
 
@@ -473,7 +473,7 @@ ingress:
 * Template file: `_postgres-service.yaml`
 * Template name: `adp-helm-library.postgres-service`
 
-A K8s `Service` object of type `ExternalName` configured to refer to a Postgres database hosted on a server outside of the K8s cluster such as AWS RDS.
+A K8s `Service` object of type `ExternalName` configured to refer to a Postgres database hosted on a server outside of the K8s cluster
 
 A basic usage of this object template would involve the creation of `templates/postgres-service.yaml` in the parent Helm chart (e.g. `ffc-microservice`) containing:
 

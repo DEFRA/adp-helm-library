@@ -58,4 +58,21 @@ spec:
       {{- else}}
       interval: "5m"
       {{- end }}
+  featureFlag:
+    selectors:
+      - keyFilter: "*"
+        labelFilter: {{ .Values.name | quote }}
+      {{- if and .Values.containerConfigMap .Values.containerConfigMap.keyValues .Values.containerConfigMap.keyValues.selector }}
+      {{- range $selector := $.Values.containerConfigMap.keyValues.selector }}
+      - keyFilter: {{ required (printf $requiredMsg "containerConfigMap.keyValues.selector.keyFilter") $selector.keyFilter | quote }}
+        labelFilter: {{ required (printf $requiredMsg "containerConfigMap.keyValues.selector.labelFilter") $selector.labelFilter | quote }}
+      {{- end }}
+      {{- end }}
+    refresh:
+      enabled: true
+      {{- if and .Values.containerConfigMap .Values.containerConfigMap.keyValues .Values.containerConfigMap.keyValues.refresh }}
+      interval: {{ .Values.containerConfigMap.keyValues.refresh.interval }}
+      {{- else}}
+      interval: "10m"
+      {{- end}}
 {{- end }}

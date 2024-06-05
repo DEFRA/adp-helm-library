@@ -1,0 +1,22 @@
+{{- define "adp-helm-library.storage-class-disk.tpl" -}}
+{{- $requiredMsg := include "adp-helm-library.default-check-required-msg" . -}}
+{{- $storageClassObject := required (printf $requiredMsg "storageClass") .Values.storageClassDisk }}
+{{- $teamResourceGroupName := required (printf $requiredMsg "teamResourceGroupName") .Values.teamResourceGroupName }}
+apiVersion: storage.k8s.io/v1
+kind: StorageClass
+metadata:
+  name: {{ required (printf $requiredMsg "storageClassDisk.name") .Values.storageClassDisk.name | quote | lower }}
+  namespace: {{ required (printf $requiredMsg "namespace") .Values.namespace  | quote }}
+  labels:
+    {{- include "adp-helm-library.labels" . | nindent 4 }}
+provisioner: "disk.csi.azure.com"
+parameters:
+  skuName: {{ .Values.storageClassDisk.diskSku | default "Premium_ZRS" | quote }}
+  resourceGroup: {{ $teamResourceGroupName }}
+reclaimPolicy: {{ .Values.storageClassDisk.reclaimPolicy | default "Retain" | quote }}  
+volumeBindingMode: {{ .Values.storageClassDisk.volumeBindingMode | default "Immediate" | quote }}
+allowVolumeExpansion: {{ .Values.storageClassDisk.allowVolumeExpansion | default true }}  
+{{- end }}
+{{- define "adp-helm-library.storage-class-disk" -}}
+{{- include "adp-helm-library.util.merge" (append . "adp-helm-library.storage-class-disk.tpl") -}}
+{{- end -}}

@@ -120,3 +120,23 @@ periodSeconds: {{ required (printf $requiredMsg "probe.periodSeconds") $settings
 failureThreshold: {{ required (printf $requiredMsg "probe.failureThreshold") $settings.failureThreshold }}
 timeoutSeconds: {{ $settings.timeoutSeconds | default 1 }}
 {{- end -}}
+
+{{/*
+Storage account FullName in Azure
+*/}}
+{{- define "storageAccount.fullname" -}}
+{{- $ := index . 0 }}
+{{- $storageAccountName := index . 1 }}
+{{- $requiredMsg := include "adp-helm-library.default-check-required-msg" $ }}
+{{- $storageAccountPrefix := (required (printf $requiredMsg "storageAccountPrefix") $.Values.storageAccountPrefix) }}
+{{- if le (len $storageAccountName) 9 }}
+{{- if $storageAccountPrefix }}
+{{- (printf "%s%s" $storageAccountPrefix $storageAccountName) | lower }}
+{{- else }}
+{{- printf "this-condition-is-required-for-linting" }}
+{{- end }}
+{{- else }}
+{{- fail (printf "The storage account name '%s' is longer than the permitted 9 characters." $storageAccountName) }}
+{{- end }}
+
+{{- end }}

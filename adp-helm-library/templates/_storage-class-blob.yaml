@@ -1,0 +1,25 @@
+{{- define "adp-helm-library.storage-class-blob.tpl" -}}
+{{- $requiredMsg := include "adp-helm-library.default-check-required-msg" . -}}
+{{- $storageClassObject := required (printf $requiredMsg "storageClass") .Values.storageClassBlob }}
+{{- $teamResourceGroupName := required (printf $requiredMsg "teamResourceGroupName") .Values.teamResourceGroupName }}
+apiVersion: storage.k8s.io/v1
+kind: StorageClass
+metadata:
+  name: {{ required (printf $requiredMsg "storageClass.name") .Values.storageClassBlob.name | quote | lower }}
+  namespace: {{ required (printf $requiredMsg "namespace") .Values.namespace  | quote }}
+  labels:
+    {{- include "adp-helm-library.labels" . | nindent 4 }}
+provisioner: blob.csi.azure.com
+parameters:
+  protocol: {{ .Values.storageClassBlob.protocol | default "nfs" | quote }}
+  resourceGroup: {{ $teamResourceGroupName }}
+  {{- if .Values.storageClassBlob.storageAccountName }}
+  storageAccount: {{ include "storageAccount.fullname" (list $ .Values.storageClassBlob.storageAccountName) }}
+  {{- end }}
+reclaimPolicy: {{ .Values.storageClassBlob.reclaimPolicy | default "Retain" | quote }}  
+volumeBindingMode: {{ .Values.storageClassBlob.volumeBindingMode | default "Immediate" | quote }}
+allowVolumeExpansion: {{ .Values.storageClassBlob.allowVolumeExpansion | default true }}  
+{{- end }}
+{{- define "adp-helm-library.storage-class-blob" -}}
+{{- include "adp-helm-library.util.merge" (append . "adp-helm-library.storage-class-blob.tpl") -}}
+{{- end -}}

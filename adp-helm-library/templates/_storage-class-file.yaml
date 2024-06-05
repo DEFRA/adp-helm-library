@@ -1,0 +1,30 @@
+{{- define "adp-helm-library.storage-class-file.tpl" -}}
+{{- $requiredMsg := include "adp-helm-library.default-check-required-msg" . -}}
+{{- $storageClassFileObject := required (printf $requiredMsg "storageClassFile") .Values.storageClassFile }}
+{{- $teamResourceGroupName := required (printf $requiredMsg "teamResourceGroupName") .Values.teamResourceGroupName }}
+apiVersion: storage.k8s.io/v1
+kind: StorageClass
+metadata:
+  name: {{ required (printf $requiredMsg "storageClassFile.name") .Values.storageClassFile.name | quote | lower }}
+  namespace: {{ required (printf $requiredMsg "namespace") .Values.namespace  | quote }}
+  labels:
+    {{- include "adp-helm-library.labels" . | nindent 4 }}
+provisioner: "file.csi.azure.com"
+parameters:  
+  resourceGroup: {{ $teamResourceGroupName }}
+  {{- if .Values.storageClassFile.storageAccountName }}
+  {{- $storageAccountFullName := include "storageAccount.fullname" (list $ .Values.storageClassFile.storageAccountName) }}
+  {{- $enablePrivateEndpoint := $.Values.enablePrivateEndpoint | default "disable" }}
+  storageAccount: {{ $storageAccountFullName }}
+  storeAccountKey: {{ .Values.storageClassFile.storeAccountKey | default false | quote }}
+  {{- if eq $enablePrivateEndpoint "enable" }}
+  server: {{ printf "%s.privatelink.file.core.windows.net" $storageAccountFullName }}
+  {{- end }}
+  {{- end }}
+reclaimPolicy: {{ .Values.storageClassFile.reclaimPolicy | default "Retain" | quote }}  
+volumeBindingMode: {{ .Values.storageClassFile.volumeBindingMode | default "Immediate" | quote }}
+allowVolumeExpansion: {{ .Values.storageClassFile.allowVolumeExpansion | default true }}  
+{{- end }}
+{{- define "adp-helm-library.storage-class-file" -}}
+{{- include "adp-helm-library.util.merge" (append . "adp-helm-library.storage-class-file.tpl") -}}
+{{- end -}}

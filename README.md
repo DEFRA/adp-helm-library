@@ -64,6 +64,18 @@ name: <string>
 namespace: <string>
 ```
 
+### Environment specific Default values 
+
+The below values are used by the ASO templates internally, and their values are set using `platform variables` in `adp-flux-services` repository.
+
+Whilst the Platform orchestration will manage the 'platform' level variables, they can be optionally supplied in some circumstances. Examples include in sandpit/development when testing against team-specific infrastructure (that isn't Platform shared). So, if you have a dedicated Service Bus or Database Server instance, you can point to those to ensure you apps works as expected. Otherwise, don't supply the Platform level variables as these will be automatically managed and orchestrated throughout all the environments appropriately against core shared infrastructure. You (as a Platform Tenant) just supply your team-specific/instance specific infrastructure config' (i.e. Queues, Storage Accounts, Databases).
+
+```
+teamResourceGroupName: <string>                         --Team ResourceGroup Name where team resources are created
+storageAccountPrefix: <string>                          --The prefix used for the storage account resource name
+enablePrivateEndpoint: <string>                         --Flag to control creation of private endpoint. ("Enable", "Disable")
+```
+
 ### Cluster IP service template
 
 * Template file: `_cluster-ip-service.yaml`
@@ -631,17 +643,115 @@ deployment:
 
 ### Storage Class template
 
-* Template file: `_storage-class.yaml`
-* Template name: `helm-library.storage-class`
+StorageClasses have parameters that describe volumes belonging to the storage class. Different parameters may be accepted depending on the `provisioner`. Currently below `provisioner` are supported.
+- blob.csi.azure.com
+- file.csi.azure.com
+- disk.csi.azure.com
+
+#### Storage Class template for Blob CSI Driver 
+
+* Template file: `_storage-class-blob.yaml`
+* Template name: `adp-helm-library.storage-class-blob`
 
 A k8s `StorageClass`.  
 
-A basic usage of this object template would involve the creation of `templates/storage-class.yaml` in the parent Helm chart (e.g. `microservice`).
+A basic usage of this object template would involve the creation of `templates/storage-class-blob.yaml` in the parent Helm chart (e.g. `microservice`).
 
 ```
-{{- include "adp-helm-library.storage-class" (list . "microservice.storage-class") -}}
-{{- define "microservice.storage-class" -}}
+{{- include "adp-helm-library.storage-class-blob" (list . "ncea-harvester.storage-class-blob") -}}
+{{- define "ncea-harvester.storage-class-blob" -}}
 {{- end -}}
+```
+
+##### Required values
+The following values need to be set in the parent chart's `values.yaml` in addition to the globally required values [listed above](#all-template-required-values):
+```
+storageClassBlob:
+  name: <string>
+```
+
+##### Optional values
+
+```
+storageClassBlob:
+  storageAccountName: <string>
+  reclaimPolicy: <string>             -- default "Retain"
+  protocol: <string>                  -- default "nfs"
+  volumeBindingMode: <string>         -- default "Immediate"
+  allowVolumeExpansion: <boolean>     -- default true
+```
+
+#### Storage Class template for File CSI Driver 
+
+* Template file: `_storage-class-file.yaml`
+* Template name: `adp-helm-library.storage-class-file`
+
+A k8s `StorageClass`.  
+
+A basic usage of this object template would involve the creation of `templates/storage-class-file.yaml` in the parent Helm chart (e.g. `microservice`). This example demonstrates that additional parameters and properties can be provided based on the requirements of the services.
+
+```
+{{- include "adp-helm-library.storage-class-file" (list . "microservice.storage-class-file") -}}
+{{- define "microservice.storage-class-file" -}}
+parameters:
+  shareName: {{ .Values.storageClassFile.shareName }}
+mountOptions:
+  - dir_mode=0777
+  - file_mode=0777
+  - uid=0
+  - gid=0
+  - mfsymlinks
+  - cache=strict  # https://linux.die.net/man/8/mount.cifs
+  - nosharesock  # reduce probability of reconnect race
+  - actimeo=30  # reduce latency for metadata-heavy workload  
+{{- end -}}
+```
+##### Required values
+The following values need to be set in the parent chart's `values.yaml` in addition to the globally required values [listed above](#all-template-required-values):
+```
+storageClassFile:
+  name: <string>
+```
+
+##### Optional values
+
+```
+storageClassFile:
+  storageAccountName: <string>
+  reclaimPolicy: <string>             -- default "Retain"
+  volumeBindingMode: <string>         -- default "Immediate"
+  allowVolumeExpansion: <boolean>     -- default true
+```
+
+#### Storage Class template for Disk CSI Driver 
+
+* Template file: `_storage-class-disk.yaml`
+* Template name: `adp-helm-library.storage-class-disk`
+
+A k8s `StorageClass`.  
+
+A basic usage of this object template would involve the creation of `templates/storage-class-disk.yaml` in the parent Helm chart (e.g. `microservice`).
+
+```
+{{- include "adp-helm-library.storage-class-disk" (list . "ncea-harvester.storage-class-disk") -}}
+{{- define "ncea-harvester.storage-class-disk" -}}
+{{- end -}}
+```
+##### Required values
+The following values need to be set in the parent chart's `values.yaml` in addition to the globally required values [listed above](#all-template-required-values):
+```
+storageClassDisk:
+  name: <string>
+```
+
+##### Optional values
+
+```
+storageClassDisk:
+  diskSku: <string>                   -- default "Premium_ZRS"
+  reclaimPolicy: <string>             -- default "Retain"
+  volumeBindingMode: <string>         -- default "Immediate"
+  allowVolumeExpansion: <boolean>     -- default true
 ```
 
 ### Persistent Volume template

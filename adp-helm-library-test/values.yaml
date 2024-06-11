@@ -1,25 +1,54 @@
+# These are populated when your service is created via the ADP Portal scaffolder. Do not change these, as they are abstracted from your service and are mandatory. They are for your reference here.
 name: adp-demo-service
 namespace: adp-demo
 workstream: adp-demo-workstream
 image: adp-demo-image
+teamResourceGroupName: adp-demo-team-rg 
+storageAccountPrefix: adp-demo-saprefix
+enablePrivateEndpoint: enable
+serviceAccount:
+  name: adp-demo-service-sa 
 
+# You may add further labels to identify the service or what your component does.
 labels:
   component: backend
 
+# Here you can define your Priority classes, min/max replicables etc. Empty block does the HELM Library defaults.
+deployment: {}
+
 container:
   imagePullPolicy: Always
+  port: 3000
   memCpuTier: CUSTOM
   requestMemory: 2000Mi
   requestCpu: 150m
   limitMemory: 2000Mi
   limitCpu: 150m
 
-serviceAccount:
-  name: adp-demo-service-sa  
+# These may be changed. See here: https://github.com/DEFRA/adp-helm-library?tab=readme-ov-file#container-template
+livenessProbe:
+  path: /healthz
+  port: 3000
+  initialDelaySeconds: 20
+  periodSeconds: 10
+  failureThreshold: 3
+  timeoutSeconds: 5
 
-teamResourceGroupName: adp-demo-team-rg 
-storageAccountPrefix: adp-demo-saprefix
-enablePrivateEndpoint: enable
+# These may be changed. See here: https://github.com/DEFRA/adp-helm-library?tab=readme-ov-file#container-template
+readinessProbe:
+  path: /healthy
+  port: 3000
+  initialDelaySeconds: 30
+  periodSeconds: 10
+  failureThreshold: 3
+  timeoutSeconds: 5  
+
+# These are populated when your service is created via the ADP Portal scaffolder. Do not change these, as they are abstracted from your service and are mandatory. They are for your reference here.
+# Your URL will be your <service-name>.<environment>.adp.defra.gov.uk for a front-end Web UI component. Azure Front Door is the Global Load Balancer, CDN and WAF. Nginx is the in-cluster ingress controller.
+ingress:
+  class: nginx
+  endpoint: ncea-search
+  server: environment.adp.defra.gov.uk  
 
 cronjobs:  
   - name: cronjob1

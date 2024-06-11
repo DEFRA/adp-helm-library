@@ -1,0 +1,10 @@
+apiVersion: v2
+name: adp-helm-library-test
+type: application
+version: 0.1.0
+description: A Helm chart for ADP Helm Library Tests
+dependencies:
+  - name: adp-helm-library
+    version: ^1.1.0
+    repository: file://../adp-helm-library
+

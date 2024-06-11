@@ -1,0 +1,108 @@
+{{- define "adp-helm-library.cron-jobs" -}}
+{{- $requiredMsg := include "adp-helm-library.default-check-required-msg" . }}
+{{- range $index, $job := $.Values.cronjobs }}
+{{- $serviceAccountName := "$.Values.serviceAccount.name" }}
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: {{ required (printf $requiredMsg "name") $.Values.name }}-{{ $job.name }}
+  namespace: {{ required (printf $requiredMsg "namespace") $.Values.namespace | quote }}
+  labels:
+    azure.workload.identity/use: "true"
+    {{- include "adp-helm-library.labels" $ | nindent 4 }}
+spec:
+  concurrencyPolicy: {{ $job.concurrencyPolicy | default "Forbid" }}
+  schedule: {{ required (printf $requiredMsg "job[].schedule") $job.schedule | quote | replace "|" " " }}
+  failedJobsHistoryLimit: {{ $job.failedJobsHistoryLimit | default 1 }}  
+  successfulJobsHistoryLimit: {{ $job.successfulJobsHistoryLimit | default 3 }}
+  jobTemplate:
+    spec:
+      template:
+        metadata:
+          annotations:
+            rollme: {{ randAlphaNum 5 | quote }}
+            timestamp: {{ now | date "20060102150405" | quote }}
+          labels:
+            app: {{ required (printf $requiredMsg "name") $.Values.name | quote }}
+            cron: {{ $job.name }}
+            azure.workload.identity/use: "true"
+        spec:
+        {{- if hasKey $job "imagePullSecrets" }}
+          imagePullSecrets:
+          - name: {{ $.Release.Name }}-docker
+        {{- end }}
+          serviceAccountName: {{ $.Values.serviceAccount.name | quote }}
+        {{- if hasKey $job "securityContext" }}
+          {{- if $job.securityContext.runAsUser }}
+          securityContext:
+            runAsUser: {{ $job.securityContext.runAsUser }}
+            {{- if $job.securityContext.runAsGroup }}
+            runAsGroup: {{ $job.securityContext.runAsGroup }}
+            {{- end }}
+            {{- if $job.securityContext.fsGroup }}
+            fsGroup: {{ $job.securityContext.fsGroup }}
+            {{- end }}
+          {{- end }}
+        {{- end }}
+          containers:
+          - image: {{ required (printf $requiredMsg "image") $.Values.image | quote }}
+            imagePullPolicy: {{ $.Values.container.imagePullPolicy | default "Always" | quote }}
+            name: {{ $job.name }}
+            {{- with $job.env }}
+            env:
+{{ toYaml . | indent 12 }}
+            {{- end }}
+            envFrom:
+            - configMapRef:
+                name: {{ printf "%s-config" $.Values.name | quote }}
+            - secretRef:
+                name: {{ printf "%s-secret" $.Values.name | quote }}
+            {{- with $job.command }}
+            command:
+{{ toYaml . | indent 12 }}
+            {{- end }}
+            {{- with $job.args }}
+            args:
+{{ toYaml . | indent 12 }}
+              {{- end }}
+            resources:
+            {{- include "adp-helm-library.mem-cpu-tiers" $ | indent 12 }}
+            volumeMounts:
+            - mountPath: /tmp
+              name: temp-dir
+            - name: custom-root-ca
+              mountPath: /etc/ssl/certs/defra-egress-firewall-cert-01.crt
+              subPath: defra-egress-firewall-cert-01.crt
+              readOnly: true  
+            {{- if hasKey $job "container" }}  
+            {{- with $job.container.volumeMounts }}
+{{ toYaml . | indent 12 }}
+            {{- end }}  
+            {{- end }} 
+          {{- with $job.nodeSelector }}
+          nodeSelector:
+{{ toYaml . | indent 12 }}
+          {{- end }}
+          {{- with $job.affinity }}
+          affinity:
+{{ toYaml . | indent 12 }}
+          {{- end }}
+          {{- with $job.tolerations }}
+          tolerations:
+{{ toYaml . | indent 12 }}
+          {{- end }}
+          restartPolicy: {{ $job.restartPolicy | default "OnFailures" }}
+          dnsPolicy: Default
+          volumes:
+          - name: temp-dir
+            emptyDir: {}
+          - name: custom-root-ca
+            secret:
+              optional: true
+              secretName: custom-ca-trust-secret 
+          {{- with $job.volumes }}
+{{ toYaml . | indent 10 }}
+          {{- end }}                    
+---  
+{{- end }}
+{{- end }}

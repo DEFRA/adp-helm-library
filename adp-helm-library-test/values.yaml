@@ -1,0 +1,52 @@
+name: adp-demo-service
+namespace: adp-demo
+workstream: adp-demo-workstream
+image: adp-demo-image
+
+labels:
+  component: backend
+
+container:
+  imagePullPolicy: Always
+  memCpuTier: CUSTOM
+  requestMemory: 2000Mi
+  requestCpu: 150m
+  limitMemory: 2000Mi
+  limitCpu: 150m
+
+serviceAccount:
+  name: adp-demo-service-sa  
+
+teamResourceGroupName: adp-demo-team-rg 
+storageAccountPrefix: adp-demo-saprefix
+enablePrivateEndpoint: enable
+
+cronjobs:  
+  - name: cronjob1
+    schedule: "0 21 * * *"
+    failedJobsHistoryLimit: 1
+    successfulJobsHistoryLimit: 3
+    concurrencyPolicy: Forbid
+    restartPolicy: OnFailure
+    securityContext:
+      runAsUser: 1000
+    env:
+    - name: DataSource
+      value: "medin"
+    resources:
+      requests:
+        memory: 2000Mi
+        cpu: 150m
+      limits:
+        memory: 2000Mi
+        cpu: 150m
+    volumes:    
+    - name: enrichedmetadata
+      persistentVolumeClaim:
+        claimName: metadata-fileshare-pvc
+    container:
+      volumeMounts:
+      - mountPath: /metadata-import
+        name: enrichedmetadata       
+  - name: cronjob3
+    schedule: "11 11 * * *"

@@ -859,22 +859,50 @@ timeoutSeconds: <integer>
 
 ### Cron Job template
 
-* Template file: `_cron-job.yaml`
-* Template name: `helm-library.cron-job`
+* Template file: `_cron-jobs.yaml`
+* Template name: `adp-helm-library.cron-jobs`
 
 A k8s `CronJob`.  
 
-A basic usage of this object template would involve the creation of `templates/cron-job.yaml` in the parent Helm chart (e.g. `microservice`) that includes the template defined in `_container.yaml` template:
+A basic usage of this object template would involve the creation of `templates/cron-job.yaml` in the parent Helm chart (e.g. `microservice`):
 
 ```
-{{- include "helm-library.cron-job" (list . "microservice.cron-job") -}}
-{{- define "microservice.cron-job" -}}
-spec:
-  template:
-    spec:
-      containers:
-      - {{ include "helm-library.container" (list . "microservice.container") }}
-{{- end -}}
+{{- include "adp-helm-library.cron-jobs" . -}}
+
+```
+
+##### Required values
+The following values need to be set in the parent chart's `values.yaml` in addition to the globally required values [listed above](#all-template-required-values):
+```
+cronjobs:
+  - name: <string>
+    schedule: "11 11 * * *"
+  - name: <string>
+    schedule: "10 11 * * *"    
+
+image: <string>
+container: {}     
+```
+
+##### Optional values
+
+```
+cronjobs:  
+  - name: cronjob1
+    failedJobsHistoryLimit: <int>             -- default 1
+    successfulJobsHistoryLimit: <int>         -- default 3
+    concurrencyPolicy: <string>               -- default "Forbid"
+    restartPolicy: <string>                   -- default "OnFailure"
+    securityContext:
+      runAsUser: 1000
+      runAsGroup: 
+      fsGroup:
+    env:
+    - name: <string>
+      value: <string>
+    volumes:                              -- Additional volumes
+    container:
+      volumeMounts:                       -- Additional volumeMounts for container
 
 ```
 

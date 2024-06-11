@@ -1,0 +1,4 @@
+{{- include "adp-helm-library.storage-class-disk" (list . "ncea-harvester.storage-class-disk") -}}
+{{- define "ncea-harvester.storage-class-disk" -}}
+volumeBindingMode: WaitForFirstConsumer
+{{- end -}}

@@ -79,3 +79,17 @@ cronjobs:
         name: enrichedmetadata       
   - name: cronjob3
     schedule: "11 11 * * *"
+
+storageClassBlob:
+  name: storageclassBlob1
+  reclaimPolicy: Delete
+  storageAccountName: demosa
+
+storageClassDisk:
+  name: storageclassDisk1
+  volumeBindingMode: WaitForFirstConsumer
+
+storageClassFile:
+  name: storageclassFile1
+  storageAccountName: demosa
+  shareName: share01

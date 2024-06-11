@@ -1,0 +1,14 @@
+{{- include "adp-helm-library.storage-class-file" (list . "ncea-harvester.storage-class-file") -}}
+{{- define "ncea-harvester.storage-class-file" -}}
+parameters:
+  shareName: {{ .Values.storageClassFile.shareName }}
+mountOptions:
+  - dir_mode=0777
+  - file_mode=0777
+  - uid=0
+  - gid=0
+  - mfsymlinks
+  - cache=strict  # https://linux.die.net/man/8/mount.cifs
+  - nosharesock  # reduce probability of reconnect race
+  - actimeo=30  # reduce latency for metadata-heavy workload  
+{{- end -}}

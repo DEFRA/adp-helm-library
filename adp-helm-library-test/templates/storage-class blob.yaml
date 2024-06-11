@@ -1,0 +1,3 @@
+{{- include "adp-helm-library.storage-class-blob" (list . "ncea-harvester.storage-class-blob") -}}
+{{- define "ncea-harvester.storage-class-blob" -}}
+{{- end -}}

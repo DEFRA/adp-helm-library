@@ -905,7 +905,7 @@ Check this guide for detailed field names https://kubernetes.io/docs/reference/k
 
 ```
 cronjobs:  
-  - name: cronjob1
+  - name: <string>
     failedJobsHistoryLimit: <int>             -- default 1
     successfulJobsHistoryLimit: <int>         -- default 3
     concurrencyPolicy: <string>               -- default "Forbid"

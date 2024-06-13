@@ -141,6 +141,7 @@ container:
   limitCpu: <string - REQUIRED if memCpuTier is CUSTOM>
 ```
 
+##### Memory Cpu Tier
 Please see memCpuTier values in the below table:
 
 | TIER   | CPU-REQUEST | CPU-LIMIT | MEMORY-REQUEST | MEMORY-LIMIT |
@@ -880,11 +881,27 @@ cronjobs:
   - name: <string>
     schedule: "10 11 * * *"    
 
-image: <string>
-container: {}     
+image: <string>               -- Container image name
 ```
 
-##### Optional values
+By default, Azure workload identity is enabled in the cronjob template by the addition of below label and a service account with the name of the microservice is added to the deployment. These inputs are **not required** from user and are handled by platform.
+
+```
+apiVersion: apps/v1
+kind: Deployment
+spec:
+  ...
+  template:
+    metadata:
+    labels:
+      azure.workload.identity/use: "true"
+    spec:  
+      serviceAccountName: "adp-microservice"
+
+```
+
+##### Optional values 
+Check this guide for detailed field names https://kubernetes.io/docs/reference/kubernetes-api/workload-resources/pod-v1/#Container
 
 ```
 cronjobs:  
@@ -893,16 +910,91 @@ cronjobs:
     successfulJobsHistoryLimit: <int>         -- default 3
     concurrencyPolicy: <string>               -- default "Forbid"
     restartPolicy: <string>                   -- default "OnFailure"
+    command: <[]string>
+    args: <[]string>
+    livenessProbe: <Probe>
+    readinessProbe: <Probe>
     securityContext:
-      runAsUser: 1000
-      runAsGroup: 
-      fsGroup:
-    env:
+      runAsUser: <int>
+      runAsGroup: <int>
+      fsGroup: <int>
+      runAsNonRoot: <boolean>                 -- default true
+    env:                                      -- List of environment variables to set in the container
     - name: <string>
       value: <string>
-    volumes:                              -- Additional volumes
+    volumes: <[]Volume>                       -- List of volumes that can be mounted by containers belonging  to the pod.
     container:
-      volumeMounts:                       -- Additional volumeMounts for container
+      volumeMounts: <[]VolumeMount>           -- Pod volumes to mount into the container's filesystem
+```
+
+The following values can optionally be set in the parent chart's values.yaml to select the required CPU and Memory for a container ([see table for memory cpu reference](#memory-cpu-tier)):
+```
+container:
+  imagePullPolicy: <string>      --Default Always
+  memCpuTier: <string S|M|L|XL|XXL|CUSTOM>  --Default M
+  requestMemory: <string - REQUIRED if memCpuTier is CUSTOM>
+  requestCpu: <string - REQUIRED if memCpuTier is CUSTOM>
+  limitMemory: <string - REQUIRED if memCpuTier is CUSTOM>
+  limitCpu: <string - REQUIRED if memCpuTier is CUSTOM>  
+```
+
+#### Usage examples
+The following section provides usage examples for the CronJob template.
+
+##### Example 1 : ServiceA in TeamA creates single cronjob by providing below values in chart's values.yaml
+
+```
+cronjobs:  
+  - name: cronjob1
+    schedule: "0 21 * * *"  
+    failedJobsHistoryLimit: 1
+    successfulJobsHistoryLimit: 3
+    concurrencyPolicy: Forbid
+    restartPolicy: OnFailure
+    env:
+    - name: DataSource
+      value: "medin"
+
+image: adp-demo-image
+
+container:
+  imagePullPolicy: Always
+```
+
+##### Example 2 : ServiceB in TeamA creates Two cronjob with the additional volumes, Custom CPU and Memory by providing below values in chart's values.yaml 
+
+```
+cronjobs:  
+  - name: cronjob1
+    schedule: "11 11 * * *"
+
+  - name: cronjob2
+    schedule: "0 21 * * *"  
+    failedJobsHistoryLimit: 1
+    successfulJobsHistoryLimit: 3
+    concurrencyPolicy: Forbid
+    restartPolicy: OnFailure
+    env:
+    - name: DataSource
+      value: "medin"
+    volumes:    
+    - name: enrichedmetadata
+      persistentVolumeClaim:
+        claimName: metadata-fileshare-pvc
+    container:
+      volumeMounts:
+      - mountPath: /metadata-import
+        name: enrichedmetadata
+
+image: adp-demo-image
+
+container:
+  imagePullPolicy: Always
+  memCpuTier: CUSTOM
+  requestMemory: 600Mi
+  requestCpu: 150m
+  limitMemory: 600Mi
+  limitCpu: 150m  
 
 ```
 

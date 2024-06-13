@@ -62,13 +62,6 @@ cronjobs:
     env:
     - name: DataSource
       value: "medin"
-    resources:
-      requests:
-        memory: 2000Mi
-        cpu: 150m
-      limits:
-        memory: 2000Mi
-        cpu: 150m
     volumes:    
     - name: enrichedmetadata
       persistentVolumeClaim:
@@ -79,6 +72,22 @@ cronjobs:
         name: enrichedmetadata       
   - name: cronjob3
     schedule: "11 11 * * *"
+    livenessProbe:
+      failureThreshold: 3
+      httpGet:
+        path: /healthzv
+        port: 3000
+      initialDelaySeconds: 20
+      periodSeconds: 10
+      timeoutSeconds: 5  
+    readinessProbe:
+      failureThreshold: 3
+      httpGet:
+        path: /healthy
+        port: 3000
+      initialDelaySeconds: 30
+      periodSeconds: 10
+      timeoutSeconds: 5  
 
 storageClassBlob:
   name: storageclassBlob1

@@ -10,6 +10,9 @@ metadata:
   labels:
     azure.workload.identity/use: "true"
     {{- include "adp-helm-library.labels" $ | nindent 4 }}
+  annotations:
+    configmap.reloader.stakater.com/reload: {{ printf "%s-config" $.Values.name | quote }}
+    secret.reloader.stakater.com/reload: {{ printf "%s-secret" $.Values.name | quote }}  
 spec:
   concurrencyPolicy: {{ $job.concurrencyPolicy | default "Forbid" }}
   schedule: {{ required (printf $requiredMsg "job[].schedule") $job.schedule | quote | replace "|" " " }}
@@ -42,6 +45,7 @@ spec:
             {{- if $job.securityContext.fsGroup }}
             fsGroup: {{ $job.securityContext.fsGroup }}
             {{- end }}
+            runAsNonRoot: {{ $job.securityContext.runAsNonRoot | default true }}
           {{- end }}
         {{- end }}
           containers:
@@ -79,17 +83,13 @@ spec:
 {{ toYaml . | indent 12 }}
             {{- end }}  
             {{- end }} 
-          {{- with $job.nodeSelector }}
-          nodeSelector:
-{{ toYaml . | indent 12 }}
+          {{- with $job.livenessProbe  }}
+            livenessProbe:
+{{ toYaml . | indent 14 }}
           {{- end }}
-          {{- with $job.affinity }}
-          affinity:
-{{ toYaml . | indent 12 }}
-          {{- end }}
-          {{- with $job.tolerations }}
-          tolerations:
-{{ toYaml . | indent 12 }}
+          {{- with $job.readinessProbe  }}
+            readinessProbe:
+{{ toYaml . | indent 14 }}
           {{- end }}
           restartPolicy: {{ $job.restartPolicy | default "OnFailures" }}
           dnsPolicy: Default
